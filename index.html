@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
   <head>
+    <title>Liam Hays</title>
     <!-- Image viewer from W3Schools -->
     <style>
       h1 {
@@ -10,49 +11,35 @@
 	  /* Sitka is a nice-looking serif font. It is built into Windows. */
 	  font-family: Sitka, Noto Serif, serif;
       }
+
       div.gallery {
+	  margin: 5px;
 	  border: 1px solid #ccc;
+	  float: left;
+	  width: 300px;
       }
+      
       div.gallery:hover {
 	  border: 1px solid #777;
       }
+      
       div.gallery img {
 	  width: 100%;
 	  height: auto;
       }
+      
       div.desc {
 	  padding: 15px;
 	  text-align: center;
-	  font-family: courier;
+	  font-family: sans-serif;
       }
-      * {
-	  box-sizing: border-box;
-      }
-      .responsive {
-	  padding: 0 6px;
-	  float: left;
-	  width: 24.99999%;
-      }
-
-      @media only screen and (max-width: 700px) {
-	  .responsive {
-	      width: 49.99999%;
-	      margin: 6px 0;
-	  }
-      }
-      
-      @media only screen and (max-width: 500px) {
-	  .responsive {
-	      width: 100%;
-	  }
-      }
-
       /* This causes the things that hold images to expand to hold the images. */
       .clearfix:after {
 	  content: "";
 	  display: table;
 	  clear: both;
       }
+
       dt {
 	  font-family: courier;
       }
@@ -66,81 +53,129 @@
   <body>
     <h1>Liam Hays</h1>
     <h2>Projects</h2>
-    <dl>
-      <dt><a href="https://github.com/liamhays/tunnel">tunnel</a></dt>
-      <dd>a Sega Game Gear game coded using devkitSMS and the Small Device C Compiler.</dd>
 
-      <dt><a href="https://github.com/liamhays/color-demo">color-demo</a></dt>
-      <dd>my first successful foray into Z80 assembly for the Game Gear, a small program that uses interrupts to show many colors on screen at once.</dd>
-
-      <dt><a href="https://github.com/liamhays/cpld_flashcart">cpld_flashcart</a></dt>
-      <dd>documents and files for a currently-in-development Game Gear flash cartridge.</dd>
-
-      <dt><a href="https://github.com/liamhays/game-gear-power-docs">game-gear-power-docs</a></dt>
-      <dd>a detailed circuit analysis of the power circuit in the Game Gear.</dd>
-
-      <dt><a href="https://github.com/liamhays/hpex">HPex</a></dt>
-      <dd>a Python-based modern GUI and CLI interface to the HP 48 series of calculators.</dd>
-
-      <dt><a href="https://github.com/liamhays/hp35s-mode">hp35s-mode</a></dt>
-      <dd>a rudimentary Emacs mode for writing programs to be entered into an HP 35s.</dd>
-    </dl>
-
-    <h2>Gallery</h2>
-    <div class="responsive">
+    <p>
       <div class="gallery">
 	<a target="_blank" href="https://github.com/liamhays/tunnel">
 	  <img src="tunnel.gif">
 	  <div class="desc">tunnel</div>
 	</a>
       </div>
-    </div>
 
-    <div class="responsive">
+      <dl>
+	<dt><a href="https://github.com/liamhays/tunnel">tunnel</a></dt>
+	<dd>A
+	simple <a href="https://segaretro.org/Sega_Game_Gear">Sega
+	Game Gear</a> game coded in C, using
+	the <a href="https://github.com/sverx/devkitSMS">devkitSMS
+	toolkit</a> and
+	the <a href="http://sdcc.sourceforge.net/">Small Device C
+	Compiler</a>.</dd>
+      </dl>
+    </p>
+    
+    <br><br><br><br><br><br><br><br><br><br><br><br>
+    <p>
       <div class="gallery">
 	<a target="_blank" href="https://github.com/liamhays/hpex">
 	  <img src="hpex_main_window.png">
 	  <div class="desc">HPex</div>
 	</a>
       </div>
-    </div>
 
-    <div class="responsive">
+      <dl>
+	<dt><a href="https://github.com/liamhays/hpex">HPex</a></dt>
+	<dd>A complete file transfer and communications package for
+	the <a href="https://www.hpmuseum.org/hp48s.htm">HP 48
+	calculator series</a>, made in pure Python 3, with graphical
+	and command-line interfaces.</dd>
+      </dl>
+    </p>
+
+    <br><br><br><br><br><br><br><br><br><br>
+
+    <p>
       <div class="gallery">
 	<a target="_blank" href="https://github.com/liamhays/color-demo">
 	  <img src="color-demo.png">
 	  <div class="desc">color-demo</div>
 	</a>
       </div>
-    </div>
+      <dl>
+	<dt><a href="https://github.com/liamhays/color-demo">color-demo</a></dt>
+	<dd>My first successful Game Gear written in
+	pure <a href="http://www.z80.info/z80brief.htm">Z80</a> <a href="http://www.z80.info/z80code.htm">assembly
+	code</a>. This is a small program that uses precise timing to
+	exceed what the game console's hardware is normally capable
+	of creating.</dd>
+      </dl>
+    </p>
 
-    <div class="responsive">
+    <br><br><br><br><br><br><br><br><br><br><br>
+    
+    <p>
       <div class="gallery">
 	<a target="_blank" href="https://github.com/liamhays/game-gear-power-docs">
 	  <img src="game-gear-power-docs.png">
 	  <div class="desc">game-gear-power-docs</div>
 	</a>
       </div>
-    </div>
 
-    <div class="responsive">
+      <dl>
+	<dt><a href="https://github.com/liamhays/game-gear-power-docs">game-gear-power-docs</a></dt>
+	<dd>A
+	detailed <a href="https://www.latex-project.org/">LaTeX</a>
+	document, explaining the switching regulators inside the Game
+	Gear console and how they work, as well as their natural limitations.</dd>
+      </dl>
+    </p>
+
+    <br><br><br><br><br><br><br><br><br><br><br>
+    
+    <p>
       <div class="gallery">
 	<a target="_blank" href="https://github.com/liamhays/hp35s-mode">
 	  <img src="hp35s-mode.png">
 	  <div class="desc">hp35s-mode</div>
 	</a>
       </div>
-    </div>
 
-    <div class="responsive">
+      <dl>
+	<dt><a href="https://github.com/liamhays/hp35s-mode">hp35s-mode</a></dt>
+	<dd>An <a href="https://www.gnu.org/software/emacs/">Emacs</a>
+	major mode, coded in pure Emacs Lisp, designed to aid
+	programming of
+	the <a href="http://thimet.de/CalcCollection/Calculators/HP-35s/Contents.htm">HP
+	35s scientific calculator</a>.</dd>
+      </dl>
+    </p>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br>
+    
+    <p>
       <div class="gallery">
 	<a target="_blank" href="https://github.com/liamhays/cpld_flashcart">
 	  <img src="cpld_flashcart.png">
 	  <div class="desc">cpld_flashcart</div>
 	</a>
       </div>
-    </div>
+
+      <dl>
+	<dt><a href="https://github.com/liamhays/cpld_flashcart">cpld_flashcart</a></dt>
+	<dd><a href="https://www.kicad.org/">KiCad</a> designs, Z80
+	and Arduino code, and general notes for a work-in-progress
+	design of a rewritable user-controlled game cartridge (known
+	as a "flashcart", as it uses flash memory) for the Game
+	Gear.</dd>
+      </dl>
+    </p>
+    
+<!--    <br><br><br><br><br><br><br>
+
+    <h2>Gallery</h2>
+-->
   </body>
 </html>
 
 
+    
