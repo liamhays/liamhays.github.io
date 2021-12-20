@@ -1,0 +1,1 @@
+sdcc -c -mz80 --peep-file ../peep-rules.txt silver_palette_c

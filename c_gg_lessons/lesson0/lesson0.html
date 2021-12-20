@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <meta charset="UTF-8">
+  <head>
+    <title>devkitSMS GG Programming Lesson 0</title>
+    <link href="../style.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <h1>Lesson 0</h1>
+    <p>
+      Welcome to my Game Gear programming tutorials! Eventually this
+      will be a reasonably complete guide through programming the Game
+      Gear (GG) in both C and Z80 assembly.
+    </p>
+
+    <h2>What You'll Need</h2>
+    <p>
+      I explain the software and programming later, but you'll need a
+      few prerequisite skills:
+    </p>
+    <dl>
+      <dt>Some C experience.</dt>
+      <dd>
+	You don't need to be a master, but you should be able to
+	program in C. If you've programmed the Arduino, that's
+	probably enough to get going. For sure, you cannot start
+	coding for the Game Gear if you've never programmed before.
+      </dd>
+
+      <dt>File/command line skills.</dt>
+      <dd>
+	We'll be using the command line in the tutorial series. Go
+	learn the command line for your operating system if you don't
+	already know how to use it.
+      </dd>
+    </dl>
+    
+						      
+    <h1>Getting Started</h1>
+    <p>
+      In Lesson 0 you'll set up the programming environment. You'll have
+      to download a few things to get started.
+    </p>
+    <h2>The Small Device C Compiler</h2>
+    <p>
+      The <a href="sdcc.sourceforge.net">Small Device C Compiler</a>
+      (SDCC) is exactly what it sounds like: a C compiler for small,
+      typically quite old, processors. The Game Gear is based around
+      the Zilog Z80 processor, so we'll be using the Z80 output from
+      SDCC. SDCC has very complex optimization support, because of the
+      limited power of old chips, but it is almost completely C
+      standards-compliant and has numerous useful features of its
+      own. Download the binary for your operating
+      system <a href="http://sdcc.sourceforge.net/index.php#Download">here</a>
+      and install it.
+    </p>
+
+    <p>
+      If you're on Windows and you're running the installer, choose
+      the "Medium" installation type:
+    </p>
+
+    <img src="medium_installation.png"/>
+
+    <p>
+      At the end of the installation, make sure "Add &lt;install
+      path\bin&gt; to the PATH" box is checked: (if you're on another
+      OS, make sure the binary directory is in the appropriate PATH
+      variable)
+    </p>
+
+    <img src="add_to_install_path.png"/>
+
+    <p>
+      Once SDCC is installed, test it: run "sdcc" in a terminal and
+      you should get this output:
+    </p>
+
+    <img src="sdcc_test.png"/>
+
+    <h2>Text Editor</h2>
+    <p>
+      Get yourself a good text editor that you're comfortable and
+      proficient with. I personally
+      like <a href="emacs.org">Emacs</a>, but if you don't already
+      have a favorite, try a few and see what you like.
+    </p>
+
+    <p>
+      This should be a given, but it isn't always: don't use a WYSIWIG
+      text editor like Microsoft Word. Get a real, authentic text
+      editor like Visual Studio Code, Sublime Text, or something
+      similar.
+    </p>
+
+    <h2>devkitSMS</h2>
+    <p>
+      The last piece of software we need to install
+      is <a href="https://github.com/sverx/devkitSMS">devkitSMS</a>,
+      an SDCC library by sverx that provides numerous useful functions
+      for programming the Master System and Game Gear.
+    </p>
+
+    <p>
+      Download
+      the <a href="https://github.com/sverx/devkitSMS/archive/refs/heads/master.zip">master.zip</a>
+      from the repository and extract it somewhere convenient. You'll
+      have to access the files when you're compiling your source code,
+      so place it in a directory near where you'll be keeping your source.
+    </p>
+
+    <h2>Emulicious</h2>
+    <p>
+      To run your code, you'll need either a real Game Gear with a
+      flash cartridge or an emulator. There are many GG emulators
+      available, but the one of choice for homebrew development
+      is <a href="https://emulicious.net">Emulicious</a>. It is
+      very accurate and stable, has many features to show what your
+      program's doing.
+    </p>
+
+    <p>
+      Download it and unpack it to a convienent location.
+    </p>
+    
+    <h1>Wrapping Up</h1>
+    <p>
+      SDCC should be working, devkitSMS should be somewhere
+      accessible, and you should have a text editor up and running by
+      now. Move forward onto Lesson 1 to actually start coding.
+    </p>
+  </body>
+</html>
+    

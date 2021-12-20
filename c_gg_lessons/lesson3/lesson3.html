@@ -1,0 +1,529 @@
+<!doctype html>
+<html>
+  <meta charset="UTF-8">
+  <head>
+    <title>devkitSMS GG Programming Lesson 3</title>
+    <link href="../prism.css" rel="stylesheet"/>
+    <link href="../style.css" rel="stylesheet"/>
+  </head>
+
+  <body>
+    <script src="../prism.js"></script>
+    <h1>Lesson 3</h1>
+    <p>
+      In the last lesson you learned about the hardware in the Game
+      Gear. In this lesson we'll put that knowledge to use.
+    </p>
+
+    <p>
+      So far, we have run real code on the GG, but it wasn't very
+      interesting. All the code did was automatically load a simple
+      font into the VDP and print a string. We as the programmer
+      barely even had to go anything---devkitSMS took care of
+      everything.
+    </p>
+
+    <h2>Source</h2>
+    <p>
+      We've got a few files this time. Start by downloading five
+      files: <a href="silver_tiles.c" download>silver_tiles.c</a>,
+      <a href="silver_tiles.h" download>silver_tiles.h</a>,
+      <a href="silver_palette.h"
+      download>silver_palette.h</a>, <a href="silver_tilemap.h"
+      download>silver_tilemap.h</a>, and <a href="silver_tilemap.c"
+      download>silver_tilemap.c</a>. Place them in a directory, and
+      copy or link the necessary files
+      (<code>SMSlib_GG.lib</code>, <code>SMSlib.h</code>, etc.) into
+      that directory.
+    </p>
+
+    <p>
+      Once you have those, copy and paste this code
+      into <code>silver.c</code> in the same directory as just before.
+    </p>
+
+    <pre>
+<code class="language-C">#define TARGET_GG
+
+#include "SMSlib.h"
+#include "silver_tiles.h"
+#include "silver_palette.h"
+#include "silver_tilemap.h"
+
+SMS_EMBED_SEGA_ROM_HEADER(1, 1);
+SMS_EMBED_SDSC_HEADER_AUTO_DATE(1, 0, "Liam Hays", "Silver: Lesson 3",
+                                "Silver the Hedgehog on screen");
+	  
+void main() {
+  SMS_loadTiles(silver_tiles, 0, silver_tiles_length);
+  SMS_loadTileMapArea(6, 3, silver_tilemap, 10, 20);
+  GG_loadBGPalette(silver_palette);
+  GG_loadSpritePalette(silver_palette + 32);
+
+  SMS_displayOn();
+  while (1);
+}</code></pre>
+
+
+    <p>
+      You should now have a total of six source files. To compile, use
+      these commands:
+    </p>
+    <pre>
+<code class="language-bash">sdcc -c -mz80 --peep-file peep-rules.txt silver_tiles.c
+
+sdcc -c -mz80 --peep-file peep-rules.txt silver_tilemap.c
+
+sdcc -c -mz80 --peep-file peep-rules.txt silver.c
+
+sdcc -o silver.ihx -mz80 --no-std-crt0 --data-loc 0xC000 crt0_sms.rel silver.rel silver_tiles.rel silver_tilemap.rel SMSlib_GG.lib
+
+ihx2sms silver.ihx silver.gg</code></pre>
+
+    <p>
+      This is a good time to set up GNU <code>make</code> or a similar
+      build system (though something as complicated as CMake probably
+      isn't worth it). If you're using <code>make</code>, just put all
+      five of those commands under an <code>all:</code> target.
+    </p>
+
+    <p>
+      Once <code>silver.gg</code> has been compiled, open it in
+      Emulicious. You should see a familiar face:
+    </p>
+
+    <img src="silver_gg.png"/>
+    <div class="caption">Silver the Hedgehog, ripped from the
+      excellent Genesis ROM hack The S Factor: Sonia & Silver by
+      Aquasplash.</div>
+
+    <h2>Breakdown</h2>
+    <p>
+      This example is actually only a little more complicated than the
+      example in Lesson 1.
+    </p>
+
+    <p>
+      First we include all the data to display on the screen. We'll
+      learn more about the correct way to do this in a bit.
+    </p>
+
+    <pre><code class="language-c">#define TARGET_GG
+
+#include "SMSlib.h"
+#include "silver_tiles.h"
+#include "silver_palette.h"
+#include "silver_tilemap.h"</code></pre>
+    
+    <p>
+      Then we set up the ROM header and SDSC header.
+    </p>
+
+    <pre><code class="language-C">SMS_EMBED_SEGA_ROM_HEADER(1, 1);
+SMS_EMBED_SDSC_HEADER_AUTO_DATE(1, 0, "Liam Hays", "Silver: Lesson 3",
+                                "Silver the Hedgehog on screen");</code></pre>
+
+    <p>
+      Once that is complete, we load the tiles that make up Silver,
+      the tilemap area to display him, and the tilemap palette, all
+      in <code>main()</code>. I'll explain more about these functions
+      much later on.
+    </p>
+
+    <pre><code class="language-C">  SMS_loadTiles(silver_tiles, 0, silver_tiles_length);
+  SMS_loadTileMapArea(6, 3, silver_tilemap, 10, 20);
+  GG_loadBGPalette(silver_palette);</code></pre>
+
+    <p>
+      Finally, we turn on the display and enter an infinite loop. Note
+      that "turning on the display" doesn't affect anything on the
+      GG's screen hardware; instead, the VDP only generates video
+      output when the display is on. The display is off at power-on,
+      and when the display is off, we can write data to the VDP and
+      VRAM whenever we want. When the display is on, we have to be
+      more careful and parsimonious about when we write to the VDP and
+      VRAM.
+    </p>
+
+    <p>
+      We also enter an infinite loop for safety: while it's unlikely,
+      it is possible that the Z80 will keep reading data in the
+      compiled GG binary and try to use it as code. That could result
+      in adverse effects, like corrupting data in VRAM or Z80 RAM.
+    </p>
+    
+
+    <pre><code class="language-C">  SMS_displayOn();
+  while (1);</code></pre>
+
+
+    <h2>Making the Data</h2>
+    <h3>Preparing Silver</h3>
+    <p>
+      The image of Silver didn't get on screen magically. To convert
+      an image to the GG takes a bit of work in any circumstance, but
+      luckily there are tools that make it easier.
+    </p>
+
+    <p>
+      I started by downloading a sprite sheet of Silver from the page
+      on <a href="https://www.spriters-resource.com/genesis_32x_scd/thesfactorsoniaandsilverhack/sheet/98563/">The
+      Spriter's Resource</a> for <u>The S Factor</u>. I also used GIMP
+      for all the editing.
+    </p>
+
+    <p>
+      I then cropped out the large image of Silver standing, facing
+      the camera. If you crop exactly to his bounding box, the
+      resulting image is 79x160 pixels. This is clearly not an integer
+      multiple of 8x8, so I cropped it to 80x160 pixels.
+    </p>
+
+    <img src="silver_spritesheet_cropping.png"/>
+    <div class="caption">Cropping Silver out of the sprite sheet. Look
+      closely at the right side of the selection rectangle, you can see
+      how it's one pixel beyond where it needs to be to fit an 8x8
+      multiple rectangle.</div>
+
+    <p>
+      I then cropped Silver out and saved him to a new file. In the
+      new file, I used GIMP's <u>Color Exchange</u> tool to convert
+      the blue background to black. You could convert the blue to any
+      other color as well, but it's better to use one that's already
+      in use on Silver himself, so that his color fidelity isn't
+      reduced. If you used a color for the background not in use on
+      Silver, that color would take up a slot in the palette and
+      reduce the number of colors used on Silver.
+    </p>
+
+    <img src="silver_color_swap.png"/>
+    <div class="caption">Converting the blue background to black.</div>
+      
+    <p>
+      We're almost finished modifying the image. Once Silver was
+      cropped properly and his background adjusted, I converted the
+      image to indexed color. Indexed color means that the image is
+      stored with a palette, and each pixel is a reference to a color
+      in the palette. We need indexed color because the tool we'll be
+      using to convert to the GG tile format only works with indexed
+      color PNGs.
+    </p>
+
+    <img src="silver_indexed_color.png"/>
+    <div class="caption">Converting Silver to indexed color, using 16
+      colors.</div>
+
+    <!-- scaled because it's pretty small otherwise -->
+    <img src="silver_standing_scaled.png"/>
+    <div class="caption"> Since the image already came from a color-limited
+      system, the Genesis, converting Silver to GG color did little
+      damage. He looks as sleek as ever.</div>
+    
+    <p>
+      Since we're going to be displaying Silver using only the
+      tilemap, we have to use only 16 colors when converting to
+      indexed color. You should see Silver's appearance change sightly
+      after converting; for me his muzzle and arm ring things became
+      more yellow.
+    </p>
+
+    <p>
+      Last step: export the image to a PNG. I used compression level
+      5, but it shouldn't really matter. Just make sure you know where
+      the file is, since we'll be using a command-line tool to convert
+      it.
+    </p>
+
+    <h3>Converting to GG Format</h3>
+    <p>
+      There are other ways to do this, but I believe the best way to
+      convert an image to GG tile format is with the
+      tool <code><a href="https://github.com/yuv422/png2tile">png2tile</a></code>. <code>png2tile</code>
+      takes PNG input and can create tiles, tilemaps, and palettes,
+      for both the Master System and Game Gear palette formats, and
+      most importantly, can output them in binary files.
+    </p>
+
+    <p>
+      (digression) Most SMS/GG coding beginners are directed toward
+      Maxim
+      Zhao's <code><a href="https://github.com/maxim-zhao/bmp2tile">bmp2tile</a></code>. <code>bmp2tile</code>
+      supports multiple image formats, compression, and can even
+      optimize the tiles to remove duplicates and use
+      horizontal/vertical flipping for the tilemap. However, I have
+      found it to be buggy (or, at least, I'm not using it right), and
+      it's written in C#, so running it on anything besides Windows is
+	difficult at best.
+    </p>
+
+    <p>
+      (digression continues) <code>bmp2tile</code> also only creates
+      output useful for assembly programming. For C programming, you
+      have to convert that output manually into a C array, and it's
+      not really worth the time. <code>png2tile</code> can make binary
+      output, which is much more easily converted to C arrays.
+    </p>
+
+    <p>
+      (digression over) Let's convert Silver to GG data. Go
+      get <code>png2tile</code> and compile it. (I will eventually
+      host Windows binaries on this site.) Then, run it like this,
+      assuming the cropped and indexed image is <code>silver.png</code>:
+    </p>
+
+<pre><code class="language-bash">./png2tile silver.png -savetiles silver_tiles.bin -savepalette silver_palette.bin -savetilemap silver_tilemap.bin -pal gg -binary</code></pre>
+
+    <p>
+      This will tell <code>png2tile</code> to create tiles, a palette
+      in GG color mode, a tilemap, and save it as various files in
+      binary format. <code>png2tile</code> needs the input PNG to be a
+      8x8 multiple image, hence why <code>silver.png</code> is 80x160.
+    </p>
+
+    <h3>Converting to C Arrays</h3>
+    <p>
+      This is a good opportunity to discuss something important about
+      data management for projects like this. <b>DO NOT STORE DATA IN
+      HEADER FILES!</b> This guidance was first brought to my
+      knowledge when I dabbled in homebrew programming for the Game
+      Boy Advance, by J
+      Vijn's <a href="https://www.coranac.com/tonc/text/bitmaps.htm#ssec-data-hdr">guide
+      for the <code>tonclib</code> library</a>.
+    </p>
+
+    <p>
+      Here's why: you probably already know that good practice in C
+      programming is to never <code>#include</code> anything but
+      header files. However, header files are supposed to only contain
+      declarations and macros. If you load up a bunch of header files
+      with thousands of lines of raw data, then the compiler will
+      recompile that data <i>every time you compile your
+      project</i>. Even though modern compilers and computers are
+      capable enough to handle this, it will still slow down
+      compilation and can increase the risk of "multiple declaration"
+      errors, which are notoriously hard to fix.
+    </p>
+
+    <p>
+      This advice rings particularly true for a <code>devkitSMS</code>
+      project, because compiling a complete project is done in two
+      steps. If data is stored outside of header files, each file can
+      be compiled separately and linked together at the end. Assuming
+      you have a correctly configured build system, you can take this
+      one step farther and only compile the modified files on each
+      build. The linker will then link each individual data and code
+      object file together and produce the output binary.
+    </p>
+
+    <p>
+      So here's how you do that. We'll use the actual source files
+      that make Silver, in this case, <code>silver_tiles.h</code>
+      and <code>silver_tiles.c</code>. <code>silver_tiles.h</code>
+      contains the following:
+    </p>
+
+<pre><code class="language-C">#pragma once
+
+extern const int silver_tiles_length;
+extern const unsigned char silver_tiles[4480];</code></pre>
+    
+    <p>
+      The header file has an <i>include guard</i>, in this
+      case, <code>#pragma once</code>. This is also good practice, as
+      it prevents a header file from being included at multiple places
+      by the preprocessor.
+    </p>
+
+    <p>
+      Each variable is defined as <code>extern
+      const</code>. An <code>extern</code> variable means that there
+      is another declaration of that variable in a source file,
+      and <code>const</code> tells SDCC to place the variable in ROM
+      so the Z80's meager 8K of RAM doesn't overflow. 
+    </p>
+
+    <p>
+      Then, <code>silver_tiles.c</code> contains this:
+    </p>
+    
+<pre><code class="language-C">#include "silver_tiles.h"
+
+const int silver_tiles_length = 4480;
+const unsigned char silver_tiles[4480] = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  // ( ... trimmed ... )
+};</code></pre>
+
+  <p>
+    It is nothing more than the definitions for the two
+    variables. However, note that there are no <code>extern</code>s in
+    the source file.
+  </p>
+
+  <h3>(Actually) Converting to C Arrays</h3>
+  <p>
+    With that said, let's convert the data to a C array. I am using
+    the Linux tool <code>xxd</code>, which can automatically convert binary
+    data to a C
+    array. <a href="https://sourceforge.net/projects/xxd-for-windows/">Here
+    is a Windows build</a>, which should be identical in
+    functionality. It is a command-line tool in any circumstance.
+  </p>
+
+  <p>
+    Run <code>xxd</code> with the <code>-i</code> flag, like this, on
+    each of the tile, tilemap, and palette binary files:
+  </p>
+  
+<pre><code class="language-bash">xxd -i silver_tiles.bin</code></pre>
+
+  <p>
+    <code>xxd</code> will make two variables, one for the array and
+    one for the length of the array. It prints out the contents of a
+    file to the terminal, so you probably want to use some kind of
+    redirection to a file. Create a header file like the example
+    above, give the array a length (but keep the length variable,
+    we'll need it later), and make the
+    variables <code>const</code>. <code>#include</code> the header
+    file in your main source file---or wherever it's needed---and make
+    sure your compilation process will also compile the matching
+    source file for that header file.
+  </p>
+
+    <p>
+      One more thing worth noting: I did not move the data
+      in <code>silver_palette.h</code> into a C source file. It is
+      only 32 bytes long, and I am lazy. In a real game or project,
+      you would have many different palettes, and you might even want
+      to group their declarations together into one header.
+    </p>
+  <h2>Back to Breakdown</h2>
+  <p>
+    Remember about forty thousand lines ago how I mentioned that I
+    would explain those function calls in more depth? Well, here we
+    go. First, here's the same functions again.
+  </p>
+
+<pre><code class="language-C">  SMS_loadTiles(silver_tiles, 0, silver_tiles_length);
+  SMS_loadTileMapArea(6, 3, silver_tilemap, 10, 20);
+  GG_loadBGPalette(silver_palette);</code></pre>
+
+    <p>
+      <code>SMS_loadTiles()</code> is a macro that copies tiles into
+      VRAM. It is actually a macro, and it maps to the
+      function <code>SMS_VRAMmemcpy()</code>. Fortunately, we don't need
+      to know about the latter function, and <code>SMS_loadTiles()</code>
+      has a simple syntax:
+    </p>
+
+<pre><code class="language-C">SMS_loadTiles(src, tileFrom, size);</code></pre>
+
+    <p>
+      <code>src</code> is a pointer to the tiles to copy into
+      VRAM. <code>tileFrom</code> is the tile index in VRAM to copy
+      to. <code>size</code> is the number of tiles to copy. So
+    </p>
+
+    <pre><code class="language-C">  SMS_loadTiles(silver_tiles, 0, silver_tiles_length);</code></pre>
+
+    <p>
+      will copy <code>silver_tiles_length</code> tiles from the array
+      (aka the pointer) <code>silver_tiles</code> into tile index 0 in
+      VRAM.
+    </p>
+
+    <p>
+      Then we load the tilemap into VRAM. The tilemap as generated
+      by <code>png2tile</code> can't be directly loaded---if you do
+      that, using <code>SMS_loadTileMap()</code>, the result is this
+      mess:
+    </p>
+
+    <img src="silver_wrong_tilemap.png"/>
+
+    <p>
+      Instead, we use the function (actually, it's a macro again that
+      just calls a function to copy to
+      VRAM) <code>SMS_loadTileMapArea()</code>. It takes five
+      arguments: X location to copy to, Y location to copy to, array
+      to copy, X dimension of the tilemap area, and Y dimension of the
+      tilemap area. So 
+    </p>
+
+    <pre><code class="language-C">  SMS_loadTileMapArea(6, 3, silver_tilemap, 10, 20);</code></pre>
+
+    <p>
+      will copy the data from <code>silver_tilemap</code> to tilemap
+      coordinate (6, 3), and copy a tilemap that is 10 by 20
+      tiles. Using this function instead
+      of <code>SMS_loadTileMap()</code> will write empty entries in
+      the tilemap to make the tilemap fit the area it is supposed
+      to. That's why Silver looks right, and not like the mess he does above.
+    </p>
+
+    <p>
+      Finally, we copy the palette to the VDP using the function (not
+      a macro this time) <code>GG_loadBGPalette</code>:
+
+    </p>
+
+    <pre><code class="language-C">  GG_loadBGPalette(silver_palette);</code></pre>
+    
+    <p>
+      This function takes one argument and copies 16 colors from it
+      into the tilemap palette. The tilemap is sometimes called
+      the <i>background</i>, abbreivated BG, hence the function's
+      name.
+    </p>
+
+    <h3>Why (6, 3)?</h3>
+    <p>
+      We're nearing the end of this lesson. There's only one more
+      thing to talk about, and I saved it for this lesson instead of
+      the last one because it's best understood once you have actually
+      manipulated the tilemap.
+    </p>
+
+    <p>
+      As I mentioned before, the VDP creates an image large enough to
+      fill a traditional CRT TV screen. However, the GG LCD screen is
+      obviously much smaller than a TV screen, so it only displays a
+      portion of the full image. This is best explained by an image,
+      actually from Sega's official documentation:
+    </p>
+
+    <img src="vdp-02-cropped.bmp"/>
+    <div class="caption">What the VDP actually does when it draws one
+      frame. Complete with scribblings of some past prospective
+      developer.</div>
+
+    <p>
+      In that image, what Sega calls "cells" are actually tiles. The
+      important thing, though, is the 20x18 tile box labeled "LCD
+      display area". Note how it is offset 3 tiles below and 6 tiles
+      to the right of the upper left of the original TV screen. This
+      box is what the LCD actually shows, and you have to design your
+      game or program with that box in mind, while also accounting for
+      the fact that the rest of the screen is still virtually
+      there. That's why we tell <code>SMS_loadTileMapArea()</code> to
+      load a tilemap starting at (6, 3)---otherwise the image will be
+      offset incorrectly and might not even be visible.
+    </p>
+
+    <h2>Wrapping Up</h2>
+    <p>
+      We did a lot in this lesson. We ran a real project, converted an
+      image to GG format, learned good coding practices, discussed
+      some actual <code>devkitSMS</code> functions, and learned about
+      the GG's LCD and how it connects to the VDP's output.
+    </p>
+
+    <p>
+      In the next lesson, we'll look at more interesting and
+      complicated things with tilemaps, start using sprites, and learn
+      about how to time a program to the VDP, which is one of the most
+      important aspects of programming for the GG.
+    </p>
+  </body>
+</html>

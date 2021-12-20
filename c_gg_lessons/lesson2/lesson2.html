@@ -1,0 +1,299 @@
+<!doctype html>
+<html>
+  <meta charset="UTF-8">
+  <head>
+    <title>devkitSMS GG Programming Lesson 2</title>
+    <link href="../prism.css" rel="stylesheet"/>
+    <link href="../style.css" rel="stylesheet"/>
+  </head>
+
+  <body>
+    <h1>Lesson 2</h1>
+    <p>
+      Welcome to Lesson 2. In this lesson we'll look at the Game Gear
+      hardware in depth. Don't worry if you don't understand every
+      single thing in this lesson; you only need a reasonable
+      understanding of how this all works.
+    </p>
+
+    <p>
+      Note that if you already know how the GG works, you probably
+      don't need to read this section. You may wish to anyway, though,
+      as my jargon might be different than what you might use.
+    </p>
+    
+    <h2>The Game Gear Hardware</h2>
+    
+    <img src="gg_system_diagram.png"/>
+    <div class="caption">The Game Gear's internal hardware, slightly simplified.</div>
+    
+    <p>
+      As the diagram above shows, the Sega Game Gear is based around a
+      Zilog Z80 processor clocked at 3.579545 MHz. The Z80 is
+      connected to the cartridge ROM, 8 kilobytes of internal SRAM,
+      the Game Gear VDP, the SN76489 PSG, the buttons on the face of
+      the console, and some other hardware to control the Gear-to-Gear
+      (serial) port and other system hardware.
+    </p>
+
+    <p>
+      Note that in the real console, almost all of these components
+      are connected to the Z80 via a chip known as the <i>I/O
+      controller</i>. However, the I/O controller is transparent to
+      the programmer, simply routing signals to the right destination,
+      so I won't discuss it here.
+    </p>
+
+    <h3>The Game Gear VDP</h3>
+    <p>
+      The GG VDP (video display processor) is based on the Sega Master
+      System VDP, which is in turn based on
+      the <a href="https://en.wikipedia.org/wiki/Texas_Instruments_TMS9918">Texas
+      Instruments TMS9918</a>. The TMS9918 has 4 screen modes, and the
+      SMS/GG VDP adds a fourth mode called mode 4. While the VDP is
+      backwards compatible with the older modes, mode 4 is much more
+      powerful than the other modes and so is used exclusively on the
+      Game Gear.
+    </p>
+
+    <p>
+      The GG VDP does not use a <i>bitmap</i>, which is how most
+      images on modern computers and game consoles are created. A
+      bitmap simply consists of color data for every pixel on the
+      screen. As a result, when a bitmap is combined with a
+      sufficiently powerful processor, any kind of image can be
+      created.
+    </p>
+
+    <p>
+      Instead, the GG VDP uses <i>tiles</i>. Tiles are 8x8 pixel
+      squares and the VDP can access up to 512 tiles at once. If
+      you've got the artistic skill, almost any image can be created
+      with enough tiles.
+    </p>
+
+    <img src="green_hill_tiles.png"/>
+
+    <div class="caption">
+      Every tile is always 8x8 pixels. Green Hill Zone (above) uses
+      almost all of the 512 possible tiles. You can see that there's
+      some garbage data in the lowest two rows of the image.
+    </div>
+
+    <p>
+      Tiles and the tilemap are stored in 16 kilobytes of memory known
+      as video RAM (VRAM). I call the area of VRAM where tiles are
+      stored "tile memory", as there is unfortunately no commonly used
+      jargon. As the first diagram shows, this memory is connected to
+      only the VDP, and the Z80 can only read and write data to it by
+      accessing the VDP.
+    </p>
+    
+    <p>
+      A tile is also limited in the number of colors it can
+      contain. All the colors the VDP ever displays come from a
+      special area of memory (actually contained within the VDP
+      silicon itself) called the <i>palette</i>. The palette contains
+      32 colors, and a tile can access 16 colors from the palette.
+    </p>
+
+    <img src="green_hill_palette.png"/>
+
+    <div class="caption">
+      Green Hill Zone's 32-color palette. It is split into two
+      16-color rows.
+    </div>
+    
+    <p>
+      The GG VDP differs in one major way from the Master System VDP:
+      it can display 32 out of <b>4096</b> colors. The Master System
+      VDP can display 32 out of only 64 colors, and even the workhorse
+      Genesis only supports 512 colors (though it can display a
+      minimum of 64, and supports more colors with special modes).
+    </p>
+
+    <p>
+      However, it's not enough to give the VDP a set of tiles and a
+      palette. To create an image on the screen, the VDP reads a block
+      of data called the <i>tilemap</i>, which tells the VDP what
+      tiles to place and where to put them on the screen. Tiles can
+      only be laid end-to-end; they cannot overlap.
+    </p>
+
+    <img src="green_hill_tilemap.png"/>
+
+    <div class="caption">
+      The starting tilemap for Green Hill Zone. This is not a perfect
+      example for one particular reason we'll discuss later known as
+      scrolling---look at the first column of tiles. Also note how the
+      whole image is larger than the GG screen. The actually visible
+      portion is the thin gray box.
+    </div>
+
+    <p>
+      There's one more element to discuss. Things on the screen that
+      need to move frequently, change state, or are subject to the
+      user's input are usually displayed as <i>sprites</i>. Sprites
+      are just tiles that can be displayed <b>at any pixel
+      location</b> on the screen. Sprites are limited, though, to the
+      one half of the 512 tiles, and this half is usually the second
+      half. If you look at the picture of the tiles above, you'll see
+      that Sonic, the various badniks, the bridges, monitors, and all
+      the other objects in the game are stored beneath the thin gray
+      line. Beneath that line are the only tiles that sprites can
+      access.
+    </p>
+
+    <img src="green_hill_sprites.png"/>
+    <div class="caption">
+      Green Hill Zone doesn't use many sprites. Look at how many
+      duplicates there are. Sprites can also change what tile they
+      display.
+    </div>
+
+    <p>
+      Sprites are also the reason that there are 32 colors and not
+      16. The second row in the palette are the only colors that
+      sprites can reference, so it is called the <i>sprite
+      palette</i>. Tiles, when used in the tilemap, can actually
+      reference either row in the palette, but usually they just use
+      the first row. There isn't a common name for the first row of
+      the palette, but in these lessons, I call it the <i>tilemap
+      palette</i>.
+    </p>
+
+    <p>
+      Lastly, the VDP only supports a maximum of 64 sprites, and will
+      only display 8 sprites per pixel row. If more than 8 sprites are
+      present on one row, then the 9th and up sprite will flicker or
+      not be visible.
+    </p>
+
+    <h3>Summary</h3>
+    <p>
+      Hopefully you now have a pretty good understanding of the Game
+      Gear video hardware. Let's recap:
+    </p>
+
+    <ul>
+      <li>Tiles are 8x8 pixel squares that reference color entries in
+	the palette.</li>
+      <li>The palette is 32 colors in the VDP, and the GG supports
+	12-bit color.</li>
+      <li>Tiles are displayed on the screen using the tilemap, which
+	tells the VDP where to put tiles and how to display them.</li>
+      <li>Sprites are individual tiles displayed at any pixel
+      location. Sprites can only access the second palette, known as
+      the sprite palette. The VDP can display up to 64 sprites, with a
+	maximum of 8 per pixel row.</li>
+    </ul>
+
+    <h3>Drawing an Image</h3>
+    <p>
+      To draw an image, the VDP pixel by pixel over the screen,
+      starting in the upper left corner. This is known
+      as <i>scanning</i>. It then reads data from VRAM, iterating over
+      the tilemap. Each entry in the tilemap is sequential, and line
+      breaks are implied by the fact that the screen image is 256
+      pixels wide, or 32 tiles. Each entry encodes information about
+      how to display a tile:
+    </p>
+
+    <ol>
+      <li>The tile number. This number is 9 bits, encoding which one
+	of the 512 possible tiles to display.</li>
+      <li>Horizontal flip. If horizontal flip is enabled for a tilemap
+	entry, that tile will be displayed flipped over the y-axis.</li>
+      <li>Vertical flip. If vertical flip is enabled for a tilemap
+	entry, that tile will be displayed flipped over the x-axis. This
+	can be used together with horizontal flip.</li>
+      <li>Palette select. By default, tiles are displayed using the
+	tilemap palette, but any tile can also be displayed with the
+	sprite palette. This is only useful if the colors in the
+	palettes and the tiles are aligned in a useful way.</li>
+      <li>Priority. By default, sprites are always displayed on top of
+	tiles. If this flag is enabled for a tile in the tilemap,
+	sprites will be displayed under this tile instead.</li>
+    </ol>
+
+    <p>
+      As the VDP progresses down the screen, it reads the information
+      for each entry in the tilemap and displays that tile
+      accordingly. At the same time, it processes sprites in a special
+      area of VRAM known as the <i>sprite attribute table</i>, or
+      SAT. Sprites have far fewer configuration options than the
+      tilemap: they have a Cartesian coordinate representing their
+      upper left pixel, and what tile index to display. If the VDP's
+      current location in the scanning process matches a sprite
+      coordinate, and the VDP hasn't overflowed its sprite
+      capabilities, it will draw that sprite. (It won't draw it again
+      on the next pixel row because the coordinate maps only to the
+      upper left of the sprite.)
+    </p>
+    
+    <img src="green_hill_combined.png"/>
+    <div class="caption">So when the tilemap, correct palette, and
+    sprites are all displayed, we get Sonic in all his glory!</div>
+
+    <p>
+      devkitSMS has numerous functions to control the VDP because it's
+      such a complicated chip. We'll use them shortly.
+    </p>
+
+    <h3>Rest of the Hardware</h3>
+    <p>
+      Obviously there's more to the Game Gear than just the Z80 and
+      the VDP. The most recognizable component is the buttions, which
+      are descended from the original Master System controllers.
+    </p>
+
+    <img src="sms_gg_comparison_resized.png"/>
+    <div class="caption">
+      The Game Gear's button inputs are very similar to the Master
+      System's. Credit: <a href="https://segaretro.org">Sega Retro</a>.
+    </div>
+
+    <p>
+      The GG has a 4-button d-pad, 2 action buttons (creatively named
+      "1" and "2"), and a START button. The START button is the only
+      divergence from the Master System, and so is accessed
+      differently from the other buttons. Luckily, we don't have to
+      worry about exactly how any of the buttons are connected to the
+      Z80: devkitSMS has functions to find out what keys are pressed.
+    </p>
+
+    <h3>ROM and RAM</h3>
+    <p>
+      The ROM is where compiled code goes, so you as the programmer
+      barely have to think about it (devkitSMS applies configuration
+      options to SDCC to match the GG hardware). The RAM is where the
+      call stack and variables go, and devkitSMS also configures SDCC
+      to place data there.
+    </p>
+
+    <h3>PSG</h3>
+    <p>
+      The PSG is the chip responsible for making sound in the
+      GG. devkitSMS provides a library called PSGlib to access the
+      PSG. We'll do this much later, though.
+    </p>
+
+    <h3>Serial</h3>
+    <p>
+      The EXT connector on the GG allows for communication to another
+      GG. devkitSMS does also not support any aspect of this; once
+      again, you have to do it yourself with either SDCC's hardware
+      access extensions or Z80 assembly language. Also, the EXT port's
+      functionality is rarely emulated, so if you're going to use it,
+      you should get yourself a flashcart and a real GG.
+    </p>
+
+    <h2>Wrapping Up</h2>
+    <p>
+      In this lesson you learned about how the Game Gear's hardware
+      works, in particular the VDP. In the next lesson we'll go a
+      little deeper and use more advanced features of devkitSMS than
+      we have so far.
+    </p>
+  </body>
+</html>

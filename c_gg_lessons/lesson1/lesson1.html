@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+  <meta charset="UTF-8">
+  <head>
+    <title>devkitSMS GG Programming Lesson 1</title>
+    <link href="../prism.css" rel="stylesheet"/>
+    <link href="../style.css" rel="stylesheet"/>
+  </head>
+
+  <body>
+
+    <h1>Lesson 1</h1>
+    <p>
+      Welcome to Lesson 1. In this lesson we'll be running a small
+      Hello World program.
+    </p>
+
+    <p>
+      The code-based lessons are structured simply: first I present
+      the particular piece of source code we'll be working with, then
+      I break it down and explain each part.
+    </p>
+
+    <h2>Setting Up a Directory</h2>
+    <p>
+      Make a directory somewhere handy. In this tutorial, I'll call
+      it <code>helloworld/</code>.
+    </p>
+
+    <p>
+      Copy the following files to <code>helloworld/</code> from the
+      devkitSMS root
+      directory: <code>SMSlib/src/peep-rules.txt</code>, <code>SMSlib/SMSlib_GG.lib</code>,
+      <code>crt0/crt0_sms.rel</code>,
+      and <code>SMSlib/src/SMSlib.h</code>. If those are all in the
+      same directory as the source file, you can run the commands
+      below exactly verbatim. If they aren't...then you'll have to
+      modify the paths. Then, copy the appropriate binary (or compile
+      one yourself) for the <code>ihx2sms</code> program, in
+      the <code>devkitSMS/ihx2sms/</code>
+      directory. <code>ihx2sms</code> is needed to create the final
+      binary for the console.
+    </p>
+    
+      
+
+    <h2>Source</h2>
+    <script src="../prism.js"></script>
+    <!-- Align it like this so that there's neither indent nor a --
+      -- line break -->
+
+    <pre>
+<code class="language-C">#define TARGET_GG
+
+#include "SMSlib.h"
+#include &lt;stdio.h&gt;
+  
+SMS_EMBED_SEGA_ROM_HEADER(1, 1);
+SMS_EMBED_SDSC_HEADER_AUTO_DATE(1, 0, "Liam Hays", "Hello World",
+                                "Introduction to SMSlib programming");
+	  
+void main() {
+  SMS_autoSetUpTextRenderer();
+  SMS_setNextTileatXY(6,3);
+  printf("Hello World");
+}</code></pre>
+
+    <p>
+      That's all the code you need. Save it as <code>helloworld.c</code>.
+    </p>
+
+    <h2>Compilation</h2>
+    <p>
+      Normally when you compile C code, you can do it with one command
+      to compile and link at once. SDCC is capable of this, but the
+      requirements for the GG mean that we have to compile and link
+      separately.
+    </p>
+
+    <p>
+      Start by compiling <code>helloworld.c</code>
+      to <code>helloworld.rel</code> (<code>.rel</code> is SDCC's
+      extension for object files):
+
+      <pre><code class="language-bash">sdcc -c -mz80 --peep-file peep-rules.txt helloworld.c</code></pre>
+    </p>
+    
+    <p>
+      Then, link <code>helloworld.rel</code>
+      with <code>crt0_sms.rel</code>
+      and <code>SMSlib_GG.lib</code>. <code>crt0_sms.rel</code>
+      contains necessary code for the Z80, like interrupt vectors,
+      and <code>SMSlib_GG.lib</code> contains the compiled code for
+      SMSlib:
+
+      <pre><code class="language-bash">sdcc -o helloworld.ihx -mz80 --no-std-crt0 --data-loc 0xC000 crt0_sms.rel helloworld.rel SMSlib_GG.lib</code></pre>
+    </p>
+
+    <p>
+      The previous command will link all the necessary components
+      to <code>helloworld.ihx</code>, and Intel Hex file, a format
+      usually used with chip programmers. We need to convert that to a
+      normal binary format.
+    </p>
+    
+    <p>
+      The devkitSMS distribution comes with the <code>ihx2sms</code>
+      tool, which converts the <code>.ihx</code> file to a Game Gear
+      binary and adjusts the checksum in the ROM for the GG BIOS---not
+      all GGs have them, but the ones that do need the ROM to have a
+      correct checksum.
+    </p>
+
+    <p>
+      So, the final command you need to run is:
+      
+      <pre><code class="language-bash">ihx2sms helloworld.ihx helloworld.gg</code></pre>
+    </p>
+
+    <p>
+      Lastly, open Emulicious and load <code>helloworld.gg</code>. You
+      should see this:
+    </p>
+
+    <img src="helloworld_running.png"/>
+
+    <h2>Breaking Down the Code</h2>
+    <h3>Includes</h3>
+    <p>
+      Let's start at the top.
+    </p>
+
+    <pre>
+<code class="language-C">#define TARGET_GG
+
+#include "SMSlib.h"
+#include &lt;stdio.h&gt;</code></pre>
+
+    <p>
+      The <code>TARGET_GG</code> macro
+      configures <code>SMSlib.h</code> to define functions for the
+      Game Gear instead of the Master System. While the hardware of
+      each system is similar, they aren't identical and SMSlib has to
+      accommodate for the differences.
+    </p>
+
+    <p>
+      We then import <code>SMSlib.h</code>, for the declarations,
+      and <code>stdio.h</code> for <code>printf()</code>.
+    </p>
+
+    
+    <h3>ROM Header</h3>
+    <pre>
+<code class="language-C">SMS_EMBED_SEGA_ROM_HEADER(1, 1);
+SMS_EMBED_SDSC_HEADER_AUTO_DATE(1, 0, "Liam Hays", "Hello World",
+                                "Introduction to SMSlib programming");</code></pre>
+    
+    <p>
+      These two macros set some data in special location in the
+      resulting ROM file. <code>SMS_EMBED_SEGA_ROM_HEADER</code>
+      creates a ROM header, necessary on some versions of the Game
+      Gear. The two arguments are the product code and the
+      version---set these to whatever you want.
+    </p>
+
+    <p>
+      <code>SMS_EMBED_SDSC_HEADER_AUTO_DATE</code> embeds a <i>SDSC
+      header</i>, which contains information relevant to homebrew
+      software: major version, minor version, author string, name
+      string, and description string. The SDSC header also contains a
+      date, but using the <code>AUTO_DATE</code> macro will fill that
+      in automatically with today's date.
+    </p>
+
+    <h3>main()</h3>
+    <pre>
+<code class="language-C">void main() {
+  SMS_autoSetUpTextRenderer();
+  SMS_setNextTileatXY(6,3);
+  printf("Hello World");
+}</code></pre>
+
+    <p>
+      The <code>main()</code> function doesn't need to have any return
+      value or arguments. It is nothing more than an entry point for
+      where the Z80 in the Game Gear should start running code.
+    </p>
+    
+    <p>
+      devkitSMS comes with numerous useful functions. One of these
+      is <code>SMS_autoSetUpTextRenderer()</code>, which configures
+      the Game Gear video hardware to display text. If you don't
+      already know how that hardware works, don't worry about it;
+      we'll cover that in the next lesson. For now, just know that the
+      Game Gear is ready to display text.
+    </p>
+
+    <p>
+      Unfortunately, there's one more step before we can display
+      text. The Game Gear always displays an image as large as a TV
+      screen, but the internal display only shows a portion of
+      that. To make the text visible, we have to set the cursor
+      location to 6 characters to the right and 3 characters down from
+      the first character on the TV screen, because that's where the
+      GG's LCD screen is
+      positioned. <code>SMS_setNextTileatXY(6,3)</code> does exactly
+      that.
+    </p>
+
+    <p>
+      Lastly, we can print text. SMSlib configures the Game Gear for
+      ASCII text display, so you can print whatever you want. Be aware
+      that the <code>printf()</code> included with SDCC is quite
+      similar but not identical to ANSI <code>printf()</code> and in
+      particular, it does not support floating-point numbers. There's
+      more info in
+      the <a href="http://sdcc.sourceforge.net/doc/sdccman.pdf">SDCC
+      PDF manual</a>.
+    </p>
+
+    <p>
+      Also note that there isn't line wrapping within the GG
+      screen---wrapping will instead occur at the edge of the
+      generated TV screen.
+    </p>
+
+    <h2>Wrapping Up</h2>
+    <p>
+      In this lesson, you ran some basic Game Gear code and made the
+      console do something. In the next lesson, we'll look at the
+      specifics of the hardware and make something a little more
+      complicated.
+    </p>
+  </body>
+  
+</html>
