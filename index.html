@@ -78,7 +78,7 @@
       </p>
 
       <p>
-	Last updated October 1, 2022.
+	Last updated October 2, 2022.
       </p>
      </div>
     
@@ -93,16 +93,27 @@
       </div>
 
       <dl>
-	<dt>LAMDA</dt>
-	<dd>LAMDA is a STM32F405-based high-speed data sampling
-	  system. It saves data to an SD card and synchronizes samples
-	  against a GPS pulse-per-second signal.</dd>
+	<dt><a href="lamda/index.html">LAMDA</a></dt>
+	<dd>LAMDA is a 2-channel 100 kHz 12-bit data sampling system,
+	  built with an STM32F405 ARM microcontroller board. LAMDA
+	  captures multiple seconds of data at a time and saves it to
+	  an SD card, synchronizing samples against a pulse-per-second
+	  signal from a GPS unit.</dd>
       </dl>
+
+      <div class="toolkits">
+	Toolkits used:
+	<ul>
+	  <li>
+	    <a href="https://www.st.com/en/ecosystems/stm32cube.html">STM32Cube</a> development system and hardware abstraction layer
+	  </li>
+	</ul>
+      </div>
     </p>
-    <br><br><br><br>
-    <br><br><br><br>
     
-    <br><br><br>
+    <br><br><br><br>
+    <br><br><br><br>
+
 	
     <p>
       <div class="gallery">
@@ -114,9 +125,10 @@
 
       <dl>
 	<dt><a href="https://github.com/liamhays/alum">alum</a></dt>
-	<dd>A complete file transfer package for the HP RPL calculator
-	series, with a modern command-line interface. Alum is written
-	in pure Rust and requires no external dependencies.</dd>
+	<dd>A complete file transfer package for the HP Reverse Polish
+	Lisp calculator series, with a modern command-line
+	interface. Alum features multiple serial protocol implemented
+	in pure Rust.</dd>
       </dl>
 
       <div class="toolkits">
@@ -132,6 +144,34 @@
     
     <br><br><br>
 
+    <p>
+      <div class="gallery">
+	<a target="_blank" href="https://github.com/liamhays/game-gear-power-docs">
+	  <img src="game-gear-power-docs.png">
+	  <div class="desc">game-gear-power-docs</div>
+	</a>
+      </div>
+
+      <dl>
+	<dt><a href="https://github.com/liamhays/game-gear-power-docs">game-gear-power-docs</a></dt>
+	<dd>An in-depth analysis of the multiple switching power
+	regulators in the Sega Game Gear, typeset in LaTeX.</dd>
+      </dl>
+
+      <br><br>
+      
+      <div class="toolkits">
+	Toolkits used:
+	<ul>
+	  <li>
+	    <a href="https://www.latex-project.org/">LaTeX</a>
+	  </li>
+	</ul>
+      </div>
+      
+    </p>
+
+    <br><br><br><br>
     
 
     <p>
@@ -143,12 +183,12 @@
       </div>
       <dl>
 	<dt><a href="https://github.com/liamhays/mac-plus-serkey">mac-plus-serkey</a></dt>
-	<dd>An Arduino-based emulated keyboard for
+	<dd>An emulated keyboard for
 	the <a href="http://lowendmac.com/1986/mac-plus/">Macintosh
 	Plus</a> and earlier models, allowing a modern computer to
-	type on the Mac. The computer runs a Python script which
-	captures keystrokes and converts them to the Mac's special
-	code, which the Arduino then sends to the Mac.</dd>
+	type on the Mac using an Arduino connected over USB. The
+	computer captures keystrokes while teh Arduino communicates
+	with the Mac over its unique keyboard protocol.</dd>
       </dl>
 
       <br><br>
@@ -176,35 +216,6 @@
     
     <p>
       <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/game-gear-power-docs">
-	  <img src="game-gear-power-docs.png">
-	  <div class="desc">game-gear-power-docs</div>
-	</a>
-      </div>
-
-      <dl>
-	<dt><a href="https://github.com/liamhays/game-gear-power-docs">game-gear-power-docs</a></dt>
-	<dd>An in-depth analysis of the Sega Game Gear's multiple
-	switching regulator circuits, typeset in LaTeX.</dd>
-      </dl>
-
-      <br><br>
-      
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="https://www.latex-project.org/">LaTeX</a>
-	  </li>
-	</ul>
-      </div>
-      
-    </p>
-
-    <br><br><br><br>
-    
-    <p>
-      <div class="gallery">
 	<a target="_blank" href="https://github.com/liamhays/tunnel">
 	  <img src="tunnel.gif">
 	  <div class="desc">tunnel</div>
@@ -213,8 +224,8 @@
 
       <dl>
 	<dt><a href="https://github.com/liamhays/tunnel">tunnel</a></dt>
-	<dd>A
-	simple and fun arcade-style <a href="https://segaretro.org/Sega_Game_Gear">Sega
+	<dd>A little
+	arcade-style <a href="https://segaretro.org/Sega_Game_Gear">Sega
 	Game Gear</a> game coded in mostly C.</dd>
       </dl>
 
@@ -252,7 +263,7 @@
       <dl>
 	<dt><a href="https://github.com/liamhays/color-demo">color-demo</a></dt>
 	<dd>A Game Gear program written in pure assembly code for
-	the <a href="http://www.z80.info/z80brief.htm">Z80</a>
+	the <a href="http://www.z80.info/z80brief.htm">Zilog Z80</a>
 	processor. This small program uses precise timing to exceed,
 	by a factor of 7, what the game console's video hardware is
 	normally capable of displaying.</dd>
