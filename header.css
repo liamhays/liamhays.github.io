@@ -1,0 +1,25 @@
+.header {
+    width: 50%;
+    margin: 0 auto;
+    font-weight: bold;
+    background: #248a0f;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-family: sans-serif;
+}
+
+.header a.unselected {
+    padding: 10px;
+    /* disable link underline */
+    text-decoration: none;
+    /* disable blue/purple coloration */
+    color: white;
+}
+.header a.selected {
+    padding: 10px;
+    background: white;
+    color: black;
+}
+
+

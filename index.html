@@ -3,397 +3,168 @@
   <head>
     <title>Liam Hays</title>
 
-
-    <!-- Image viewer from W3Schools -->
     <style>
+      p {
+	  /* auto margin allows autoformatting based on width */
+	  margin-left: auto;
+	  margin-right: auto;
+	  width: 50%;
+	  line-height: 1.5;
+	  font-family: sans-serif;
+      }
       h1 {
 	  font-family: sans-serif;
+	  font-size: 150%;
+	  margin-left: auto;
+	  margin-right: auto;
+	  width: 50%;
+	  border-bottom: 1px solid #aaa;
       }
       h2 {
-	  /* Sitka is a nice-looking serif font. It is built into Windows. */
-	  font-family: Sitka, Noto Serif, serif;
-      }
-
-      div.gallery {
-	  margin: 5px;
-	  border: 1px solid #ccc;
-	  float: left;
-	  width: 300px;
-      }
-      
-      div.gallery:hover {
-	  border: 1px solid #777;
-      }
-      
-      div.gallery img {
-	  width: 100%;
-	  height: auto;
-      }
-      
-      div.desc {
-	  padding: 15px;
-	  text-align: center;
 	  font-family: sans-serif;
-      }
-
-      /* just a sans-serif div to match the rest of the page */
-      div.sans {
-	  font-family: sans-serif;
-	  margin-right: 40%;
+	  font-size: 150%;
+	  margin-left: auto;
+	  margin-right: auto;
+	  width: 50%;
+	  border-bottom: 1px solid #aaa;
       }
       
-      /* This causes the things that hold images to expand to hold the images. */
-      .clearfix:after {
-	  content: "";
-	  display: table;
-	  clear: both;
+      h3 {
+	  font-family: sans-serif;
+	  font-size: 125%;
+	  margin-left: auto;
+	  margin-right: auto;
+	  width: 50%;
       }
-
-      dt {
-	  font-family: courier;
-	  font-size: 18pt;
-      }
-
-      dd {
-	  font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
-	  margin-right: 40%;
-      }
-
-      div.toolkits {
-	  font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
+      project {
+	  font-family: sans-serif;
+	  margin-left: auto;
+	  margin-right: auto;
+	  width: 50%;
       }
 
       ul {
-	  position: relative;
-	  left: 20px;
+	  margin-left: auto;
+	  margin-right: auto;
+	  width: 50%;
+	  line-height: 1.5;
+	  font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
       }
       
     </style>
+    <link rel="stylesheet" href="header.css">
   </head>
   
   <body>
-    <h1>Liam Hays</h1>
-    <div class="sans">
-      <p>
-	Hi! I'm Liam Hays, a high school student in Albuquerque, New
-	Mexico, and this is my website. It's mostly devoted to
-	projects I've created or worked on. The following few links
-	are smaller projects, and the tiles below are bigger projects
-	or small projects that I consider basically complete.
-      </p>
-      
-      <p>
-	I have written some basic Sega Game Gear programming tutorials
-	using the SMSlib C library,
-	available <a href="https://liamhays.github.io/c_gg_lessons/contents/contents.html">here</a>.
-      </p>
+    <div class="header">
+      <a class="selected">Home</a>
+      <a class="unselected" href="blog/index.html">Blog</a>
+      <a class="unselected" href="https://github.com/liamhays">GitHub</a>
+    </div>
+    <!--<h1>Liam Hays</h1>-->
+    <p>
+      Hi! I'm Liam Hays, a high school student in Albuquerque, New
+      Mexico, and you've found my website. It's mostly devoted to
+      projects I've created or worked on, and I'm adding some
+      blog-like content. I also redesigned the whole website in May 2023.
+    </p>
 
-      <p>
-	In 2020, I wrote
-	a <a href="https://docs.google.com/document/d/13xJqassetCrPjHy9RSIzAp5_YHReIM33seBNZfSYKVo/edit?usp=sharing">brief
-	technical description</a> (public Google Doc) of a combined
-	DVD player/karaoke machine for the Texas Instruments
-	Electronics Online Challenge. The DVD player belonged to a
-	friend, and I wrote the document using only pictures of the
-	device's internals. My writeup was voted into the top ten out of
-	hundreds of submissions.
-      </p>
+    <p>
+      Last updated May 24, 2023.
+    </p>
 
-      <p>
-	In 2022, I reverse engineered the Bluetooth LE UART protocol
-	used by
-	the <a href="https://sphero.com/collections/coding-robots/products/sphero-mini">Sphero
-	Mini educational robot</a>. My notes and protocol
-	documentation are
-	at <a href="https://github.com/liamhays/sphero-ble">https://github.com/liamhays/sphero-ble</a>.
-      </p>
+    <p>
+      <a href="https://www.gnu.org/software/emacs/"><img src="made9.png"></img></a>
+    </p>
+    
+    <h1>Writing/Documentation</h1>
+    <p>
+      I have written some basic Sega Game Gear programming tutorials
+      using the SMSlib C library,
+      available <a href="https://liamhays.github.io/c_gg_lessons/contents/contents.html">here</a>.
+    </p>
 
-      <p>
-	I have contributed multiple commits to
+    <p>
+      I
+      wrote <a href="https://github.com/liamhays/game-gear-power-docs">a
+      complete circuit analysis</a> of the two switching regulators
+      inside the Sega Game Gear handheld console in LaTeX. It remains
+      the most complete documentation of these regulators and the
+      power system inside this console in existence.
+    </p>
+    
+    <p>
+      In 2020, I wrote
+      a <a href="https://docs.google.com/document/d/13xJqassetCrPjHy9RSIzAp5_YHReIM33seBNZfSYKVo/edit?usp=sharing">brief
+      technical description</a> (public Google Doc) of a combined DVD
+      player/karaoke machine for the Texas Instruments Electronics
+      Online Challenge. The DVD player belonged to a friend, and I
+      wrote the document using only pictures of the device's
+      internals. My writeup was voted into the top ten out of hundreds
+      of submissions.
+    </p>
+
+    
+    <h1>Contributions</h1>
+
+    <p>
+      I am the first person in the open-source community to
+      investigate the integrated RISC-V microcontroller contained in
+      the Rockchip RK3566 SoC, as used in the
+      Pine64 <a href="https://wiki.pine64.org/wiki/Quartz64">Quartz64</a>, <a href="https://wiki.pine64.org/wiki/PineTab2">PineTab2</a>,
+      and
+      the <a href="https://wiki.pine64.org/wiki/PineNote">PineNote</a>. <a href="https://github.com/liamhays/rk3566-mcu">My
+      findings</a> are ongoing.
+    </p>
+    
+    <p>
+      I have contributed multiple commits to
 	the <a href="https://github.com/liamhays/flipperzero-firmware">official
 	firmware repository</a> for
-	the <a href="https://flipperzero.one">Flipper Zero</a> hacking multitool.
-      </p>
-      
-      <p>
-	Last updated May 23, 2023.
-      </p>
-
-      <p>
-	<a href="https://www.gnu.org/software/emacs/"><img src="made9.png"></img></a>
-      </p>
-     </div>
-    
-    <h2>Projects</h2>
-
-    <p>
-      <div class="gallery">
-	<a target="_blank" href="lamda/index.html">
-	  <img src="./lamda/top_view.jpg">
-	  <div class="desc">LAMDA</div>
-	</a>
-      </div>
-
-      <dl>
-	<dt><a href="lamda/index.html">LAMDA</a></dt>
-	<dd>LAMDA is a 2-channel 100 kHz 12-bit data sampling system,
-	  built with an STM32F405 ARM microcontroller board. LAMDA
-	  captures multiple seconds of data at a time and saves it to
-	  an SD card, synchronizing samples against a pulse-per-second
-	  signal from a GPS unit.</dd>
-      </dl>
-
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="https://www.st.com/en/ecosystems/stm32cube.html">STM32Cube</a> development system and hardware abstraction layer
-	  </li>
-	</ul>
-      </div>
-    </p>
-    
-    <br><br><br><br>
-    <br><br><br>
-
-    
-
-    <p>
-      <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/game-gear-power-docs">
-	  <img src="game-gear-power-docs.png">
-	  <div class="desc">game-gear-power-docs</div>
-	</a>
-      </div>
-
-      <dl>
-	<dt><a href="https://github.com/liamhays/game-gear-power-docs">game-gear-power-docs</a></dt>
-	<dd>An in-depth analysis of the multiple switching power
-	regulators in the Sega Game Gear, typeset in LaTeX.</dd>
-      </dl>
-
-      <br><br><br><br>
-      
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="https://www.latex-project.org/">LaTeX</a>
-	  </li>
-	</ul>
-      </div>
-      
+	the <a href="https://flipperzero.one">Flipper Zero</a> hacking
+	multitool.
     </p>
 
-    <br><br><br><br>
-    
-
     <p>
-      <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/alum">
-	  <img src="alum_output.png">
-	  <br><br><br><br><br>
-	  <div class="desc">Alum</div>
-	</a>
-      </div>
-
-      <dl>
-	<dt><a href="https://github.com/liamhays/alum">alum</a></dt>
-	<dd>A complete file transfer package for the HP Reverse Polish
-	Lisp calculator series, with a modern command-line
-	interface. Alum features multiple serial protocols implemented
-	in pure Rust.</dd>
-      </dl>
-
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="https://www.rust-lang.org/">Rust</a>
-	  </li>
-	</ul>
-      </div>
-	    
+      In 2022,
+	I <a href="https://github.com/liamhays/sphero-ble">reverse
+	engineered and documented</a> the Bluetooth LE UART protocol
+	used by
+	the <a href="https://sphero.com/collections/coding-robots/products/sphero-mini">Sphero
+	Mini educational robot</a>.
     </p>
-    
-    <br><br><br>
-    
-    <p>
-      <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/mac-plus-serkey">
-	  <img src="mac-plus-serkey-metro.jpg">
-	  <div class="desc">mac-plus-serkey</div>
-	</a>
-      </div>
-      <dl>
-	<dt><a href="https://github.com/liamhays/mac-plus-serkey">mac-plus-serkey</a></dt>
-	<dd>An emulated keyboard for
-	the <a href="http://lowendmac.com/1986/mac-plus/">Macintosh
-	Plus</a> and earlier models, allowing a modern computer to
-	type on the Mac using an Arduino connected over USB. The
-	computer captures keystrokes while the Arduino communicates
-	with the Mac over its unique keyboard protocol.</dd>
-      </dl>
+    <h1>Technical Projects</h1>
 
-      <br><br>
-      
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    Arduino
-	  </li>
-	  <li>
-	    Python 3
-	  </li>
-	  <li>
-	    <a href="https://www.pygame.org">Pygame</a>
-	  </li>
-	</ul>
-      </div>
+    <a href="https://github.com/liamhays/lamda"><h3>LAMDA</h3></a>
+    <img src="lamda/top_view.jpg" style="display: block; width: 30%; margin: auto;"></img>
+    <p>
+      LAMDA is a 2-channel 100 kSPS 12-bit data sampling system built
+      with an STM32F405 ARM microcontroller board. LAMDA captures
+      multiple seconds of data at a time and saves it to an SD card,
+      synchronizing samples against a pulse-per-second signal from a
+      GPS unit. LAMDA is programmed with the STM32Cube framework.
     </p>
 
-    <br><br><br><br>
-    <br><br><br><br>
-    <br><br><br><br>
 
-    
-    <p>
-      <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/tunnel">
-	  <img src="tunnel.gif">
-	  <div class="desc">tunnel</div>
-	</a>
-      </div>
-
-      <dl>
-	<dt><a href="https://github.com/liamhays/tunnel">tunnel</a></dt>
-	<dd>A little
-	arcade-style <a href="https://segaretro.org/Sega_Game_Gear">Sega
-	Game Gear</a> game coded in mostly C.</dd>
-      </dl>
-
-      <br><br>
-
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="http://sdcc.sourceforge.net/">Small Device C
-	      Compiler</a>
-	  </li>
-	  <li>
-	    <a href="https://github.com/sverx/devkitSMS">devkitSMS
-	      toolkit</a>
-	  </li>
-	  <li>
-	    <a href="http://www.z80.info/z80code.htm">Z80 assembly</a>
-	  </li>
-	</ul>
-      </div>
+    <a href="https://github.com/liamhays/alum"><h3>alum</h3></a>
+    <img src="alum_output.png" style="display: block; width: 20%; margin: auto;"></img>
+    <p>A complete file transfer package for the HP Reverse Polish Lisp
+      calculator series, with a modern command-line interface. Alum
+      features multiple serial protocols implemented in pure Rust.
     </p>
     
-    <br><br><br><br>
-    
-
-    
+    <a href="https://github.com/liamhays/mac-plus-serkey"><h3>mac-plus-serkey</h3></a>
+    <img src="mac-plus-serkey-metro.jpg" style="display: block; width: 20%; margin: auto;"></img>
     <p>
-      <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/color-demo">
-	  <img src="color-demo.png">
-	  <div class="desc">color-demo</div>
-	</a>
-      </div>
-      <dl>
-	<dt><a href="https://github.com/liamhays/color-demo">color-demo</a></dt>
-	<dd>A Game Gear program written in pure assembly code for
-	the <a href="http://www.z80.info/z80brief.htm">Zilog Z80</a>
-	processor. This small program uses precise timing to exceed,
-	by a factor of 7, what the game console's video hardware is
-	normally capable of displaying.</dd>
-      </dl>
-
-      <br><br>
-      
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="http://www.z80.info/z80code.htm">Z80 assembly</a>
-	  </li>
-	</ul>
-      </div>
+      This is a keyboard emulator for
+      the <a href="http://lowendmac.com/1986/mac-plus/">Macintosh
+      Plus</a> and earlier models, allowing a modern computer to type
+      on the Mac using an Arduino connected over USB. The computer
+      captures keystrokes while the Arduino communicates with the Mac
+      over its unique keyboard protocol.
     </p>
 
-    <br><br><br><br>
-    
-    <!--
-    <p>
-      <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/hp35s-mode">
-	  <img src="hp35s-mode.png">
-	  <div class="desc">hp35s-mode</div>
-	</a>
-      </div>
 
-      <dl>
-	<dt><a href="https://github.com/liamhays/hp35s-mode">hp35s-mode</a></dt>
-	<dd>An <a href="https://www.gnu.org/software/emacs/">Emacs</a>
-	major mode (made in Emacs Lisp) designed to aid RPN
-	programming of
-	the <a href="http://thimet.de/CalcCollection/Calculators/HP-35s/Contents.htm">HP
-	35s scientific calculator</a>.</dd>
-      </dl>
-
-      <br><br>
-      
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="https://www.gnu.org/software/emacs/manual/html_node/eintr/">Emacs Lisp</a>
-	  </li>
-	  <li>
-	    HP 35s code
-	  </li>
-	</ul>
-      </div>
-    </p>
-
-    <br><br><br><br>
-
-    <p>
-      <div class="gallery">
-	<a target="_blank" href="https://github.com/liamhays/cpld_flashcart">
-	  <img src="cpld_flashcart.png">
-	  <div class="desc">cpld_flashcart</div>
-	</a>
-      </div>
-
-      <dl>
-	<dt><a href="https://github.com/liamhays/cpld_flashcart">cpld_flashcart</a></dt>
-	<dd>General notes for a work-in-progress design of a
-	"flashcart" (a rewritable user-controlled game cartridge) for the Game Gear.</dd>
-      </dl>
-
-      <br><br>
-      
-      <div class="toolkits">
-	Toolkits used:
-	<ul>
-	  <li>
-	    <a href="https://www.kicad.org/">KiCad</a>: Eeschema and Pcbnew
-	  </li>
-	  <li>
-	    <a href="http://www.z80.info/z80code.htm">Z80 assembly</a>
-	  </li>
-	  <li>
-	    Arduino
-	  </li>
-	</ul>
-      </div>
-    </p>
-    -->
   </body>
 </html>
 
