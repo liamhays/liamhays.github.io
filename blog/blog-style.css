@@ -1,0 +1,65 @@
+p {
+    /* auto margin allows autoformatting based on width */
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    line-height: 1.5;
+    font-family: sans-serif;
+}
+h1 {
+    font-family: sans-serif;
+    font-size: 150%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    border-bottom: 1px solid #aaa;
+}
+h2 {
+    font-family: sans-serif;
+    font-size: 150%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    border-bottom: 1px solid #aaa;
+}
+
+h3 {
+    font-family: sans-serif;
+    font-size: 125%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+project {
+    font-family: sans-serif;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+ul {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    line-height: 1.5;
+    font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+dl {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    line-height: 1.5;
+    font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
+}
+
+dt {
+    font-weight: bold;
+}
