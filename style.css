@@ -1,10 +1,12 @@
-:root {
-    /* If we use percent, then the attributes of the screen don't
-   matter. And if we put it in the :root tag, all the attributes will
-   apply to the whole page. */
-    margin-left: 22%;
-    margin-right: 20%;
-}    
+@media only screen and (min-width: 1000px) {
+    :root {
+	/* If we use percent, then the attributes of the screen don't
+	   matter. And if we put it in the :root tag, all the attributes will
+	   apply to the whole page. */
+	margin-left: 22%;
+	margin-right: 20%;
+    }
+}
 
 p {
     font-family: "Segoe UI", "Noto Sans", sans-serif;
