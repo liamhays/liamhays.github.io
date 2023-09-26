@@ -1,8 +1,18 @@
-:root {
-    /* auto margin allows autoformatting based on width */
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
+@media only screen and (orientation: portrait) {
+    :root {
+	/* auto margin allows autoformatting based on width */
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+    }
+}
+
+@media only screen and (orientation: landscape) {
+    :root {
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+    }
 }
 
 p {
@@ -27,22 +37,23 @@ h3 {
 }
 project {
     font-family: sans-serif;
+}
 
+ol {
+    line-height: 1.5;
+    font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
 }
 
 ul {
-
     line-height: 1.5;
     font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
 }
 
 img {
     display: block;
-
 }
 
 dl {
-
     line-height: 1.5;
     font-family: Noto Sans, Microsoft Sans Serif, sans-serif;
 }

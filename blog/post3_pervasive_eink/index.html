@@ -1,0 +1,437 @@
+<!doctype html>
+<html>
+  <head>
+
+    <link href="../blog-prism.css" rel="stylesheet"/>
+    <script src="../blog-prism.js"></script>
+    
+    <link rel="stylesheet" href="../../header.css">
+    <link rel="stylesheet" href="../blog-style.css">
+
+    <title>Fast Refresh on the Pervasive 2.66" Display</title>
+
+  </head>
+
+  <!-- TODO: some images --->
+  <body>
+    <div class="header">
+      <a class="unselected" href="../index.html">Home</a>
+      <a class="selected">Blog</a>
+      <a class="unselected" href="https://github.com/liamhays">GitHub</a>
+    </div>
+
+    <h1>Fast Refresh on the Pervasive 2.66" Display</h1>
+    <h2>Introduction</h2>
+    <p>
+      I have
+      a <a href="https://www.sparkfun.com/products/19219">Pervasive
+      Displays 2.66" E-ink development kit</a>, because a family
+      member bought one but didn't have a project for it. This display
+      is cool because it supports fast refresh, which many
+      hobbyist-class e-ink displays don't have. I decided that I
+      wanted to connect it (eventually) to my Quartz64 and use it as a
+      small terminal emulator, but to do this, I had to figure out how
+      to talk to it and make it refresh fast.
+    </p>
+
+    <h2>Available Documentation</h2>
+    <p>
+      My (and most people's) normal process of finding documentation
+      on any electronic part is to go to the manufacturer's website
+      and see what documentation they provide. Pervasive Displays
+      provides a demo UF2 file that runs on the Pi Pico (with fast
+      refresh), and several Arduino libraries to interact with the
+      screen, but are clearly more interested in taking you on as a
+      paid partner. This screen is available in several different
+      types
+      at <a href="https://www.pervasivedisplays.com/product/2-66-e-ink-displays">https://www.pervasivedisplays.com/product/2-66-e-ink-displays</a>. This
+      takes you
+      to <a href="https://www.pervasivedisplays.com/wp-content/uploads/2022/06/ApplicationNote_Small_Size_Mono_v02_220606.pdf">this
+      application note</a>, which describes the SPI interface,
+      specific commands for normal and fast refresh, and how to read
+      OTP memory in the display driver. Seems useful, right?
+
+    </p>
+
+    <p>
+      <b>No! Throw this application note away!</b> Do not use this
+      document! It's full of typos and outright incorrect information,
+      and most of the information appears to be for other screens or
+      outdated or wrong in a hundred ways. Run from this document.
+    </p>
+
+    <p>
+      It took a while for me to figure this out, but that's why I'm
+      writing this blog post. We're going to look at how you
+      should <i>actually</i> interface with this screen. I took
+      information
+      from <a href="https://github.com/PervasiveDisplays/PDLS_EXT3_Basic">the
+      normal Arduino library</a>,
+      the <a href="https://github.com/PervasiveDisplays/PDLS_EXT3_Basic_Fast">the
+      fast update (except it isn't really) Arduino library</a>, and
+      the <a href="https://www.pervasivedisplays.com/product/epd-pico-kit-epdk/">demo
+	UF2</a> file.
+    </p>
+
+    <p>
+      The ultimate goal of my reverse engineering here is to drive
+      this display with my Quartz64 board, probably to make a very
+      small terminal emulator. I'll describe that project in a future
+      post, and I'll link to the code that shows how to drive the
+      screen from Rust using <code>spidev</code>
+      and <code>gpio_cdev</code>.
+    </p>
+
+    <h2>SPI Interface</h2>
+    <p>
+      Most small e-ink screens use an internal display driver and a
+      serial interface, and this one is no exception. The panel
+      requires a high voltage charge pump, provided by the PCB that
+      comes with the kit, which also breaks out 2 (not 3! Check the
+      pinout
+      in <a href="https://www.pervasivedisplays.com/wp-content/uploads/2021/12/1P257-00_04_E2266CS0C1-E2266CS0C2_20211129.pdf">the
+      datasheet</a>) SPI pins, a chip select (/CS) pin, a D/C pin, a
+      RESET pin, and a BUSY status pin. The panel is rated for 3.3V
+      logic and power (the datasheet is seems mostly correct, unlike
+      the appnote). The EXT3 board that comes with the kit also
+      includes a SPI flash chip (what's on it). Pervasive calls the
+      display driver the "chip on glass", or just "CoG".
+    </p>
+
+    <p>
+      Use SPI mode 0 (CPOL = 0, CPHA = 0) and MSB first. I don't know
+      the maximum SPI speed, but it's probably around 10 MHz. The
+      Arduino libraries use 4 MHz, and I've had success driving it at
+      8 MHz.
+    </p>
+
+    <p>
+      The display uses SPI but differentiates between data and command
+      writes by the D/C pin: low for command, high for data. A command
+      is an 8-bit register to write to, and data can be any length.
+    </p>
+
+    <p>To write to a register:</p>
+
+    <ol>
+      <li><b>Activate the chip.</b></li>
+      <p>
+	Pull D/C and /CS low to select the CoG and put it in command mode.
+      </p>
+
+      <li><b>Write the register.</b></li>
+      <p>
+	With your platform's SPI system, write one byte (the register
+	you want to write to) to the SPI port.
+      </p>
+
+      <li><b>Put the chip into data mode.</b></li>
+      <p>
+	Pull /CS high briefly (1 microsecond is enough) and pull D/C
+	high to start sending data. Then, pull /CS low again and send
+	all the data.
+      </p>
+    </ol>
+
+    <p>
+      If needed, deselect the chip afterward. Example Pico SDK code
+      for this (the microsecond sleeps are probably optional):
+    </p>
+    
+    <pre><code class="language-C">void pervasive_266_write_register(uint8_t reg, uint8_t* data, uint32_t data_len) {
+    // pull D/C and display panel CS low
+    gpio_put(PIN_DC, 0);
+    gpio_put(PIN_PANEL_CS, 0);
+	
+    sleep_us(50);
+    
+    spi_write_blocking(SPI_PORT, &amp;reg, 1); // write register ID
+	
+    sleep_us(50);
+
+    // pull high/low to deselect and reselect the panel and to write data
+    gpio_put(PIN_PANEL_CS, 1);
+    gpio_put(PIN_DC, 1); // pull D/C high to send data
+    sleep_us(1);
+    gpio_put(PIN_PANEL_CS, 0);
+    
+    sleep_us(50);
+
+    // write all data
+    spi_write_blocking(SPI_PORT, data, data_len);
+    
+    sleep_us(50);
+
+    // deselect panel
+    gpio_put(PIN_PANEL_CS, 1);
+}</code></pre>
+
+    <h2>Image data format</h2>
+    <p>
+      Image data is stored as 1bpp color, formatted in rows. The most
+      significant bit corresponds to the leftmost pixel in a row.
+    </p>
+    
+    <p>
+      The screen is oriented such that when the flex cable "tail" is
+      pointing downward, the origin is in the upper left corner of the
+      display. This means that, on the 2.66" screen, each row is 152
+      pixels, and there are 296 rows. One frame of data on this screen
+      is 5624 bytes.
+    </p>
+
+    <h2>Normal Display Updates</h2>
+    
+    <p>
+      A normal update of the display refreshes the whole screen
+      several times (to erase the afterimage), then draws the desired
+      image on the screen. All the work is done by the chip in the
+      display, called the "CoG", or "chip on glass".
+    </p>
+
+    <p>
+      The list below describes how to drive both the special pins and
+      what data to write on the SPI bus. Most operations are done
+      through SPI. To issue a normal refresh to the screen:
+    </p>
+
+    <ol>
+      <li><b>Hard reset the CoG.</b></li>
+      <b>SPI transaction:</b> none
+      <p>
+	Assert RESET high for 5 ms, then low for 10 ms, then high for
+	5 ms again, then put /CS high and wait 5 ms.
+      </p>
+
+      <li><b>Soft reset the CoG.</b></li>
+      <b>SPI transaction:</b> Write <code>0x0e</code> to register <code>0x00</code>
+      <p>
+	The soft reset is always required, regardless of display mode,
+	while the hard reset is only required for a complete
+	update and before the first fast update.
+      </p>
+
+      <li><b>Set the temperature.</b></li>
+      <b>SPI transaction:</b> Write the surrounding temperature in Celsius (one byte) to register <code>0xe5</code>.
+      <p>
+	The CoG needs to know the surrounding air temperature in
+	Celsius. This adjusts the refresh speed, presumably to
+	compensate for changes the e-ink material's properties at
+	various temperatures.
+      </p>
+
+      <li><b>Activate this temperature value.</b></li>
+      <b>SPI transaction:</b> Write <code>0x02</code> to register <code>0xe0</code>.
+      <p>
+	I don't know the exact purpose of this command, but I suspect
+	that it tells the CoG that the temperature you just supplied
+	is what it should actually use.
+      </p>
+
+      <li><b>Set PSR.</b></li>
+      <b>SPI transaction:</b> Write <code>0xcf, 0x8d</code> to register <code>0x00</code>.
+      <p>
+	I don't know what PSR actually stands for (maybe "panel
+	settings register"?), but it's referenced in both the evil
+	application note and the Arduino library and you have to set
+	it.
+      </p>
+
+      <li><b>Write image data.</b></li>
+      <b>SPI transaction:</b> Write the new image to
+      register <code>0x10</code> and 5642 bytes of anything to
+      register <code>0x13</code>.
+      <p>
+	For a normal update, the CoG only needs one image but two
+	register writes. <b>You must write to both registers!</b> The
+	CoG will simply ignore whatever data you write
+	to <code>0x13</code>.
+      </p>
+
+      <li><b>Refresh the panel.</b></li>
+      <b>SPI transaction:</b> Select register <code>0x04</code>, wait,
+      select register <code>0x12</code>, wait, select
+      register <code>0x02</code>, wait.
+      <p>
+	You don't have to write any actual data to the registers in
+	this section, you just have to "select" the register by
+	writing it over SPI while D/C is low. The CoG doesn't care if
+	you write data, so I just write <code>0x00</code> to these
+	registers.
+      </p>
+      <p>
+	<code>0x04</code> turns on the DC/DC
+	converter, <code>0x12</code> refreshes the display (this is by
+	far the longest step), and <code>0x02</code> turns off the
+	DC/DC converter. <b>Between each write, poll the BUSY pin and
+	wait for it to go high.</b>
+	
+      </p>
+    </ol>
+
+    <p>
+      That's all you have to do for a normal update! The display will
+      flash to clear the old image and then display the new image you
+      provided.
+    </p>
+
+    <h2>Fast Refreshes</h2>
+    <p>
+      Technically, there are two kinds of fast refreshes. The first
+      one is fairly slow and is described (inaccurately, of course) in
+      the application note. It's only available with the Arduino
+      library, and has this odd behavior where it will flash the new
+      pixels like a full refresh, but <i>only</i> the new pixels. Each
+      fast refresh in this mode takes about 3 seconds, and it has
+      problems with ghosting or even making pixels visible if the
+      background is dark.
+    </p>
+
+    <p>
+      The faster kind of fast refresh is what we're accustomed to with
+      e-ink panels like a Kindle, Boox, PineNote, and all the rest. It
+      simply moves the new pixels with one charge cycle, so you get
+      ghosting, but it's fast. I haven't timed these refreshes yet,
+      but I think they take about 300-500 ms. Pervasive claims 300 ms
+      fast refreshes.
+    </p>
+
+    <p>
+      The slow fast refresh is the only kind available with the free
+      Arduino library. The demo UF2, which uses Pervasive's full
+      library suite that you have to pay for, uses fast refresh. As
+      such, I'm not here to nab any features of the full suite other
+      than fast refresh. GUI rendering, shape primitives, text, and
+      everything else you need for a screen like this is still up to
+      you.
+    </p>
+
+    <p>
+      I uploaded the demo UF2 to the Pi Pico that came in the kit,
+      hooked it up to my logic analyzer, and captured the command
+      sequence that makes fast refresh work.
+    </p>
+
+    <h2>Fast Refresh Updates</h2>
+    <p>
+      Real fast refreshes are similar to normal updates, but with more
+      initial configuration before the image data. The list below
+      shows the SPI transaction again but doesn't describe operations
+      shared with the normal refresh cycle.
+    </p>
+    
+    <ol>
+      <li><b>Hard reset the CoG.</b></li>
+      <b>SPI transaction:</b> none.
+      <p>
+	<b>You only have to do this once</b>, but it must be done
+	before all fast refreshes.
+      </p>
+
+      <li><b>Soft reset the CoG.</b></li>
+      <b>SPI transaction:</b> Write <code>0x0e</code> to register <code>0x00</code>
+
+      <p></p>
+      
+      <li><b>Set the temperature.</b></li>
+      <b>SPI transaction:</b> Write the surrounding temperature in Celsius (one byte) to register <code>0xe5</code>.
+
+      <p></p>
+      
+      <li><b>Activate the temperature.</b></li>
+      <b>SPI transaction:</b> Write <code>0x02</code> to register <code>0xe0</code>.
+
+      <p></p>
+      
+      <li><b>Set the PSR.</b></li>
+      <b>SPI transaction:</b> Write <code>0xcf, 0x8d</code> to register <code>0x00</code>.
+      <p></p>
+      
+      <li><b>Set the PSR again.</b></li>
+      <b>SPI transaction:</b> Write <code>0xff, 0x8f</code> to register <code>0x00</code>.
+      <p>
+	You have to send more data to the same register. I assume this is part of PSR, but I don't really know.
+      </p>
+      
+      <li><b>Set "Vcom and data interval setting".</b></li>
+      <b>SPI transaction:</b> Write <code>0x07</code> to register <code>0x50</code>.
+      <p>
+	This is a number described in the application note and the
+	Arduino library, so I'm willing to believe that this is the
+	correct name. 
+      </p>
+      
+      <li><b>Write to some other registers.</b></li>
+      <b>SPI transaction:</b> Write <code>0x0c</code>
+	to register <code>0x30</code>, then write <code>0x11</code>
+      to register <code>0x82</code>.
+      
+      <p>
+	I don't know what these do. 
+      </p>
+
+      <li><b>Write strings of data to some more registers.</b></li>
+      <b>SPI transaction:</b>
+      <ul>
+	<li>Write <code>0x01,0x00,0x05,0x05,0x01,0x09,0x01,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00</code>
+	  to <code>0x20</code>.</li>
+	<li>Write <code>0x01,0x55,0x05,0x05,0x01,0x09,0x01,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00</code>
+	  to <code>0x23</code>.</li>
+	<li>Write <code>0x01,0xAA,0x05,0x05,0x01,0x09,0x01,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00</code>
+	  to <code>0x22</code>.</li>
+	<li>Write <code>0x01,0x02,0x05,0x05,0x01,0x09,0x01,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00</code>
+	  to <code>0x21</code>.</li>
+	<li>Write <code>0x01,0x01,0x05,0x05,0x01,0x09,0x01,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00</code>
+	  to <code>0x24</code>.</li>
+	  
+      </ul>
+      <p>
+	These are long strings of data that have to be written to
+	certain registers. Again, I have no idea what they do, but
+	they enable true fast refresh. Each string is 16 bytes long.
+      </p>
+
+      <li><b>Write the old and new images.</b></li>
+      <b>SPI transaction:</b> Write the old image to
+      register <code>0x10</code> and the new image of anything to
+      register <code>0x13</code>.
+      
+      <p>
+	The CoG uses both images to figure out which pixels need their
+	state changed, through some kind of image operation
+	(subtraction, maybe?).
+      </p>
+      
+      <li><b>Refresh the panel.</b></li>
+      <b>SPI transaction:</b> Select register <code>0x04</code>, wait,
+      select register <code>0x12</code>, wait, select
+      register <code>0x02</code>, wait.
+      <p>
+	Enable the DC/DC converter, wait for BUSY to go high, refresh
+	the panel, wait for BUSY, then optionally turn the DC/DC
+	converter back off, and wait for BUSY. The demo UF2 doesn't
+	turn it off---maybe to reduce wear?
+      </p>
+      
+    </ol>
+
+    <p>
+      That's it! The display will run a fast refresh cycle and change
+      only the pixels that have been changed between the two images.
+    </p>
+
+    <h2>Future Usage</h2>
+    <p>
+      I'm working on a simple terminal emulator (not a modesetting
+      driver, though I might do that later) in Rust that will display
+      on the e-ink screen. I'll make a post about this soon, and I'll
+      probably add images to this post at the same time.
+    </p>
+    
+  </body>
+</html>
+
+     
+      
+    
+		    
