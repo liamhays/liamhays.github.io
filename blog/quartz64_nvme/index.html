@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <head>
+
+    <link href="../blog-prism.css" rel="stylesheet"/>
+    <script src="../blog-prism.js"></script>
+    
+    <link rel="stylesheet" href="../../header.css">
+    <link rel="stylesheet" href="../../style.css">
+
+    <title>Booting the Quartz64 from NVMe</title>
+
+  </head>
+
+  <body>
+    <div class="header">
+      <a class="unselected" href="../index.html">Home</a>
+      <a class="selected">Blog</a>
+      <a class="unselected" href="https://github.com/liamhays">GitHub</a>
+    </div>
+
+    <h1>Booting the Quartz64 from NVMe</h1>
+    <p>
+      The <a href="https://wiki.pine64.org/wiki/Quartz64">Quartz64</a>
+      has a M.2 PCIe slot, and it works with NVMe drives. However, you
+      have to do some configuration to get the RK3566 to actually boot
+      from this source.
+    </p>
+
+    <p>
+      The steps here assume that you already have a Quartz64 with a
+      functional Plebian root filesystem on an SD card or eMMC
+      drive. I also just blindly copy the rootfs onto the NVMe drive,
+      so the first drive has to be smaller than the NVMe. <b>If you're
+      running another distro, things might be different!</b>
+    </p>
+    
+
+    <h2>Step 1: Building U-Boot</h2>
+    <p>
+      You can do this from another computer and it'll be faster, but I
+      did this from the Quartz. As mentioned, I am running Plebian on
+      a Quartz64 Model B, so if you're doing anything different, you
+      should definitely
+      check <a href="https://wiki.pine64.org/wiki/Quartz64_Building_U-Boot">the
+      real instructions</a>.
+    </p>
+
+    <code><pre>$ sudo apt install device-tree-compiler build-essential gcc-aarch64-linux-gnu \
+	binutils-aarch64-linux-gnu make python3 python3-dev libssl-dev python3-pyelftools python3-setuptools \
+	swig git bison flex mtd-utils
+$ git clone https://source.denx.de/u-boot/u-boot.git
+$ git clone https://github.com/rockchip-linux/rkbin.git
+$ cd u-boot
+$ export ROCKCHIP_TPL="$(ls ../rkbin/bin/rk35/rk3566_ddr_1056MHz_v*.bin | sort | tail -n1)"   
+$ export BL31="$(ls ../rkbin/bin/rk35/rk3568_bl31_v*.elf | sort | tail -n1)"
+$ make quartz64-b-rk3566_defconfig
+$ make -j4</pre></code>
+
+    <h2>Step 2: Flashing the SPI flash</h2>
+    <p>
+      The U-Boot build produces several files, but the one we're
+      interested in
+      is <code>u-boot-rockchip-spi.bin</code>. <a href="https://github.com/Kwiboo/u-boot-build">Kwiboo's
+      U-Boot build instructions</a> describe how to flash this to
+      locations: for the SPI flash run
+    </p>
+
+    <code><pre>$ sudo flashcp -v -p u-boot-rockchip-spi.bin /dev/mtd0</pre></code>
+
+    <p>
+      <code>flashcp</code> is found in the <code>mtd-utils</code>
+      package (on Debian) installed earlier.
+    </p>
+    
+    <h2>Step 3: Copying the rootfs</h2>
+    <p>
+      Boot the Quartz64 from the SD or eMMC with the NVMe drive
+      inserted. Modify the partition table to whatever you want, and
+      make a partition of the type <code>Linux filesystem</code>
+      (fdisk name). Copy your entire rootfs with
+    </p>
+
+    <code><pre>$ sudo dd if=/dev/mmcblk0p2 of=/dev/nvme0n1p1 bs=4M status=progress</pre></code>
+
+    <p>
+      (There's probably a smarter way to do this!) Once the copy finishes, run:
+    </p>
+
+    <code><pre>$ sudo e2fsck -f /dev/nvme0n1p1
+$ sudo resize2fs /dev/nvme0n1p1</code></pre>
+
+    <p>
+      to resize the filesystem to fill the partition.
+    </p>
+
+    <h2>Step 4: Reboot</h2>
+    <p>
+      Remove the SD card from the slot or U-Boot will try to boot from
+      that instead of the NVMe drive. Reboot the Quartz64 and it
+      should boot from NVMe!
+    </p>
+    
+  </body>
+</html>
+
+    
+    
