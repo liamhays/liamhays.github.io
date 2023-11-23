@@ -84,7 +84,9 @@ $ make -j4</pre></code>
     <code><pre>$ sudo dd if=/dev/mmcblk0p2 of=/dev/nvme0n1p1 bs=4M status=progress</pre></code>
 
     <p>
-      (There's probably a smarter way to do this!) Once the copy finishes, run:
+      There's probably a smarter way to do this! Also note that your
+      partition numbers might be different. Once the copy finishes,
+      run:
     </p>
 
     <code><pre>$ sudo e2fsck -f /dev/nvme0n1p1
@@ -96,9 +98,9 @@ $ sudo resize2fs /dev/nvme0n1p1</code></pre>
 
     <h2>Step 4: Reboot</h2>
     <p>
-      Remove the SD card from the slot or U-Boot will try to boot from
-      that instead of the NVMe drive. Reboot the Quartz64 and it
-      should boot from NVMe!
+      Shut down the Quartz and remove all storage devices except for
+      the NVMe drive. Power it on again and U-Boot should detect the
+      drive, then boot from it!
     </p>
     
   </body>
