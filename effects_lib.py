@@ -1,6 +1,8 @@
 import subprocess
 import time
 
+# note: there are not actually any special effects here
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -55,6 +57,7 @@ whoami = subprocess.run(['whoami'], stdout=subprocess.PIPE)
 print(bcolors.WARNING + 'Username:' + bcolors.ENDC,
       bcolors.OKBLUE + whoami.stdout.decode('utf-8').replace('\n', '') + bcolors.ENDC)
 
+time.sleep(.4)
 ipaddr = subprocess.run(['ip', 'addr'], stdout=subprocess.PIPE)
 ipaddr_output_lines = ipaddr.stdout.decode('utf-8').split('\n')
 for line in ipaddr_output_lines:
@@ -62,7 +65,7 @@ for line in ipaddr_output_lines:
         parts = line.split(' ')
         print(bcolors.WARNING + f'IP Address ({parts[-1]}):' + bcolors.ENDC,
               bcolors.OKBLUE + parts[5] + bcolors.ENDC)
-
+time.sleep(.4)
 f = open('/etc/resolv.conf', 'r')
 resolv_lines = f.read().split()
 dns = ''
@@ -73,20 +76,21 @@ for i in resolv_lines:
 print(bcolors.WARNING + 'DNS:' + bcolors.ENDC,
       bcolors.OKBLUE + i + bcolors.ENDC)
 f.close()
-
+time.sleep(.4)
 cpu = subprocess.run(['lscpu'], stdout=subprocess.PIPE)
 cpu_lines = cpu.stdout.decode('utf-8').split('\n')
 for line in cpu_lines:
     if 'Model name:' in line:
         print(bcolors.WARNING + 'CPU:' + bcolors.ENDC,
               bcolors.OKBLUE + line.split('Model name:')[1].strip() + bcolors.ENDC)
+time.sleep(.4)
 pci = subprocess.run(['lspci'], stdout=subprocess.PIPE)
 pci_devs = pci.stdout.decode('utf-8').split('\n')
 for line in pci_devs:
     if 'Non-Volatile' in line:
         # no comma because the thing has a space
         print(bcolors.WARNING + 'NVMe Drive:' + bcolors.ENDC + bcolors.OKBLUE + line.split(':')[2] + bcolors.ENDC)
-
+time.sleep(.4)
 free = subprocess.run(['free', '-h'], stdout=subprocess.PIPE)
 free_lines = free.stdout.decode('utf-8').split('\n')
 for line in free_lines:
@@ -101,3 +105,4 @@ time.sleep(3)
 subprocess.run(['rm', '-rf', '~/.config/microsoft-edge'], stdout=subprocess.PIPE)
 print(bcolors.WARNING + 'Done' + bcolors.ENDC)
 print(trollface)
+
