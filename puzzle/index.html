@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+  <head>
+    
+    <title>Welcome to the Puzzle!</title>
+
+    <link rel="stylesheet" href="../style.css">
+  </head>
+
+  <body>
+    <p>
+      Congratulations! You have solved step 1 of the puzzle. Welcome
+      to step 2.
+    </p>
+
+    <p>
+      Compute the following numbers and enter them in the fields. All
+      numbers are in base 10. You are assembling the letter indexes
+      for a standard substitution cipher. You may want to do this on a
+      computer and save the numbers in a document---they won't save
+      otherwise!
+    </p>
+
+    <p>
+      Once you have all the numbers, test them with the instructions
+      at the bottom of the page. When all the numbers are correct, use
+      them to assemble a substitution cipher table like this:
+    </p>
+
+    <p>
+      <code><pre>input letters:  | Q | J | M ...
+output letters: | A | B | C ...</pre></code>
+    </p>
+
+    <p style="margin-bottom: 1cm;">
+      The input letters are in the order shown below. The output letters need to be in ABC order.
+    </p>
+    
+    <form id="form1" action="" onsubmit="return validateForm()" method="post">
+      <ul style="list-style-type: none; padding: 0; margin: 0;">
+	<li>
+	  <!-- 9 -->
+	  <label for="num1">The AMD Ryzen 5 7640U (in Liam's new
+	    computer!) has a maximum boost clock of 4.<code>_</code>
+	    GHz (one digit):</label>
+	  
+	  <input type="text" id="num1" name="num1_text" />
+	</li>
+	<li>
+	  <!-- 14 -->
+	  <label for="num2">An unlucky number plus 1:</label>
+	  <input type="text" id="num2" name="num2_text" />
+	</li>
+	
+	<li>
+	  <!-- 1 -->
+	  <label for="num3">Free answer: this one is 1</label>
+	  <input type="text" id="num3" name="num3_text" />
+	</li>
+
+	<li>
+	  <!-- 16 -->
+	  <label for="num4">The ASCII code for the <code>@</code> sign, divided by 4:</label>
+	  <input type="text" id="num4" name="num4_text" />
+	</li>
+
+	<li>
+	  <!-- 4 -->
+	  <label for="num5">The smallest real perfect square (1 doesn't count):</label>
+	  <input type="text" id="num5" name="num5_text" />
+	</li>
+
+	<li>
+	  <!-- 12 -->
+	  <label for="num6">
+	    <img src="math1.png" style="width:200px;display:inline;"/> is
+	  </label>
+	  <input type="text" id="num6" name="num6_text" />
+	</li>
+
+	<li>
+	  <!-- 26 -->
+	  <label for="num7"><code>0x1a = </code></label>
+	  <input type="text" id="num7" name="num7_text" />
+	</li>
+
+	<li>
+	  <!-- 22 -->
+	  <label for="num8">11 × 2 = </label>
+	  <input type="text" id="num8" name="num8_text" />
+	</li>
+
+	<li>
+	  <!-- 24 -->
+	  <label for="num9">You graduated high school in 20<code>__</code> (two digits):</label>
+	  <input type="text" id="num9" name="num9_text" />
+	</li>
+
+	<li>
+	  <!-- 18 -->
+	  <label for="num10">The first multiple of 9:</label>
+	  <input type="text" id="num10" name="num10_text" />
+	</li>
+
+	<li>
+	  <!-- 13 -->
+	  <label for="num11">sin(0.95 rad) = 0.8<code>__</code>4155 (2 digits)</label>
+	  <input type="text" id="num11" name="num11_text" />
+	</li>
+
+	<li>
+	  <!-- 20 -->
+	  <label for="num12">The first number divisible by 4, 5, and 10:</label>
+	  <input type="text" id="num12" name="num12_text" />
+	</li>
+
+	<li>
+	  <!-- 7 -->
+	  <label for="num13">0.<span style="text-decoration:overline;">142857</span> × 49 = </label>
+	  <input type="text" id="num13" name="num13_text" />
+	</li>
+
+	<li>
+	  <label for="num14">An ugly prime number (do this one last so you can use elimination!):</label>
+	  <input type="text" id="num14" name="num14_text" />
+	</li>
+
+	<li>
+	  <!-- 15 -->
+	  <label for="num15">90 / 6 =</label>
+	  <input type="text" id="num15" name="num15_text" />
+	</li>
+
+	<li>
+	  <!-- 3 -->
+	  <label for="num16">This number looks a lot like Cyrillic з:</label>
+	  <input type="text" id="num16" name="num16_text" />
+	</li>
+
+	<li>
+	  <!-- 23 -->
+	  <label for="num17">Roman numeral XXIII:</label>
+	  <input type="text" id="num17" name="num17_text" />
+	</li>
+
+	<li>
+	  <!-- 11 -->
+	  <label for="num18">The C programming language was developed
+	    on a PDP-<code>__</code> computer (two digits).</label>
+	  <input type="text" id="num18" name="num18_text" />
+	</li>
+
+	<li>
+	  <!-- 25 -->
+	  <label for="num19">0b11001 = </label>
+	  <input type="text" id="num19" name="num19_text" />
+	</li>
+
+	<li>
+	  <!-- 2 -->
+	  <label for="num20">The only even prime number:</label>
+	  <input type="text" id="num20" name="num20_text" />
+	</li>
+
+	<li>
+	  <!-- 6 -->
+	  <label for="num21">This number is the only number that is
+	    both the sum and product of three consecutive
+	    numbers:</label>
+
+	  <input type="text" id="num21" name="num21_text" />
+	</li>
+
+	<li>
+	  <!-- 17 -->
+	  <label for="num22">15×3 - 14×2 =</label>
+	  <input type="text" id="num22" name="num22_text" />
+	</li>
+
+	<li>
+	  <!-- 8 -->
+	  <label for="num23">The byte length of a pointer in the RV64 instruction set architecture:</label>
+	  <input type="text" id="num23" name="num23_text" />
+	</li>
+
+	<li>
+	  <!-- 10 -->
+	  <label for="num24"><img src="math2.png" style="width:70px;display:inline;"/></label>
+	  <input type="text" id="num24" name="num24_text" />
+	</li>
+
+	<li>
+	  <!-- 5 -->
+	  <label for="num25">In Unix, this permission number allows
+	    read and execute (but not write!) permission on a
+	    file:</label>
+
+	  <input type="text" id="num25" name="num25_text" />
+	</li>
+
+	<li>
+	  <!-- 21 -->
+	  <label for="num26">The age at which a person can legally
+	  drink alcohol in the US (a rule that you'd better follow
+	  😠):</label>
+	  
+	  <input type="text" id="num26" name="num26_text" />
+	</li>
+      </ul>
+
+      <p style="margin-bottom:1cm;"></p>
+    </form>
+
+    <p>
+      Verify your work by calculating a SHA256 checksum on the numbers
+      by going
+      to <a href="https://defuse.ca/checksums.htm">https://defuse.ca/checksums.htm</a>
+      and entering the numbers you found into the text box in this
+      format:
+    </p>
+
+    <p>
+      <code>1 2 3 4</code>
+    </p>
+
+    <p>
+      Do not press enter and make sure that there are no characters at
+      the end of the number list. Click "Calculate checksums..." and
+      compare the "sha256" checksum to
+      90e6c8ea6a16b6376ebb4468f7333bdd27127af48dfbcb387b0a501a8ea45480. If
+      it matches, congratulations! You have solved step 2 and can
+      press "Next" below to move to the next step. If the hashes do
+      not match, go back and make sure all your numbers are correct.
+    </p>
+    
+  </body>
+
+</html>
