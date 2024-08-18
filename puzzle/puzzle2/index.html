@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Round 3!</title>
+
+    <link rel="stylesheet" href="../../style.css">
+
+  </head>
+
+  <body>
+    <p>
+      This is the third and final step of the puzzle. The image below
+      contains a secret message and your job is to find that message
+      using code. Luckily for you, you don't have to go alone. The
+      following clues will help you on your quest:
+    </p>
+
+    <p>
+      <ul>
+	<li>Data is encoded by storing sequential bits in the lowest
+	  bit of the blue channel in each pixel. The following
+	  Python-like pseudocode shows how to extract the data:
+	  <code><pre>
+message = bytearray()
+bits_read = 0
+current_byte = 0
+bit_index = 0
+for x in range(image X pixel size):
+    for y in range(image Y pixel size):
+        px = image pixel at (x, y)
+        blue = px[2]
+        # get the lowest bit of the byte
+        bit = blue & 1
+	# shift this byte to add the new bit
+        current_byte <<= 1
+	# if the bit we got from blue is 1 (aka not 0),
+	# set the current bit to that		 
+	if bit != 0:
+            current_byte |= 1
+	bit_index += 1
+	# if we&apos;ve gotten a whole byte, start a
+	# new byte		 
+        if bit_index == 8:
+            message.append(current_byte)
+            current_byte = 0
+            bit_index = 0</pre></code>
+
+			 </li>
+	<li>
+	  Make sure the image is saved as a PNG and no other format.
+	</li>
+
+	<li>
+	  If you&apos;re using Python, use
+	  the <a href="https://python-pillow.org">PIL</a> library. You
+	  can also do this in another language, like WolframAlpha.
+	</li>
+
+	<li>
+	  The message inside is exactly 54 bytes long.
+	</li>
+
+	<li>
+	  You will have to use the substitution cipher that you
+	  previously solved to figure out the actual content of the
+	  message.
+	</li>
+	
+      </ul>
+    </p>
+
+
+    <img src="message.png"></img>
+  </body>
+</html>
